@@ -16,7 +16,7 @@ var SongViewModel = function(json, playlist) {
 
 	this.toJSON = function() {
 		return {
-			id: self.id(),
+			key: self.key(),
 			name: self.name(),
 			artist: self.artist(),
 			album: self.album()

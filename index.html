@@ -16,7 +16,7 @@
 <body>
     <header>
         <div class="center">
-            <a href="#"><h1 data-bind="click: clickLogo">Playgit</h1></a>
+            <h1 data-bind="click: clickLogo"><a href="#">Playgit</a></h1>
 
             <div id="user" data-bind="if: userIsLoggedIn">
                 <span data-bind="text: userLabel"></span>
@@ -38,7 +38,7 @@
         <div></div>
     </script>
     <script type="text/html" id="homepage-tmpl">
-        <div class="sidebar">
+        <div class="left sidebar">
             <div class="widget">
                 <div class="widget-title">Your Playlists</div>
                 <ul class='homepage-list-playlist' data-bind="template:{ name: 'homepage-list-playlist-tmpl', foreach: playlists }"></ul>
