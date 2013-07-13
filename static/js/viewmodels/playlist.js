@@ -36,6 +36,7 @@ var PlaylistViewModel = function(json) {
     	self.songs.removeAll();
     	self.pr.removeAll();
     	self.isLoading(true);
+
     	$.get('/playlist/' + this.id(), function(data) {
 	        self.isLoading(false);
 	        self.songs(data.playlist.songs);
