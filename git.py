@@ -23,11 +23,8 @@ class Git():
                 f.write('\n')
 
     def getTrackIds(self):
-        tracks = []
         with open(self.filePath(), 'r') as f:
-            trackId = f.read()
-            if trackId != '':
-                tracks.append(f.read());
+            tracks = [track.rstrip() for track in f.readlines()]
         return tracks
 
     def _createRepo(self):
