@@ -121,6 +121,7 @@ header h1 a {
 	padding: 0;
 	margin: 0;
 }
+
 .playlist-card {
 	width: 90%;
 	height: 100px;
@@ -132,6 +133,7 @@ header h1 a {
 	cursor: pointer;
 	transition: 0.2s opacity;
 	margin-bottom: 10px;
+	overflow: hidden;
 }
 .playlist-card:hover {
 	opacity: 0.7;
