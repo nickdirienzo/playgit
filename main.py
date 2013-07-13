@@ -1,7 +1,6 @@
-import datetime
 import os
-import sqlalchemy
-from flask import Flask, jsonify, render_template, request, session, Response, make_response, redirect
+import urllib2
+from flask import Flask, jsonify, render_template, request, session, Response, redirect, url_for
 from functools import wraps
 from rdio import Rdio
 
@@ -10,7 +9,7 @@ app.secret_key = 'yoloswag'
 RDIO_CONSUMER_KEY = 'c8pehjw6u8wdatpgxmq8jqkw'
 RDIO_CONSUMER_SECRET = '9ADNaSuKSG'
 
-from database import db_session, User, Playlist, Song, Activity
+from database import db_session, User, Playlist, Activity
 
 # User handling
 
@@ -41,8 +40,8 @@ def auth():
         session['user_id'] = 1 # Hold until I know what this json is
         return redirect(url_for('main'))
     else:
-        # Login failed, clear everything 
-        _ = logout()
+        # Login failed, clear everything
+        logout()
 
 @app.route('/user')
 def get_current_user():
@@ -65,25 +64,25 @@ def get_user(user_id):
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
-    session['at'] = ''
-    session['ats'] = ''
-    session['rt'] = ''
-    session['rts'] = ''
+    session.pop('at', None)
+    session.pop('ats', None)
+    session.pop('rt', None)
+    session.pop('rts', None)
     return jsonify(success=True)
 
 @app.route('/login')
 def login():
-    access_token = session['at']
-    access_token_secret = session['ats']
+    access_token = session.get('at')
+    access_token_secret = session.get('ats')
     if access_token and access_token_secret:
         rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (access_token, access_token_secret))
         try:
             current_user = rdio.call('currentUser')['result']
             print current_user
-            return jsonify({'current_user': current_user})
+            return jsonify(current_user=current_user)
         except urllib2.HTTPError:
             # Something went horribly wrong, like Rdio told us our app sucks.
-            _ = logout()
+            logout()
     else:
         session['at'] = ''
         session['ats'] = ''
@@ -91,7 +90,7 @@ def login():
         login_url = rdio.begin_authentication(callback_url=request.host + '/auth')
         session['rt'] = rdio.token[0]
         session['rts'] = rdio.token[1]
-        return jsonify({'login_url': login_url})
+        return jsonify(login_url=login_url)
 
 # API endpoints
 

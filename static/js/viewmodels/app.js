@@ -22,7 +22,7 @@ var AppViewModel = function(json) {
 	});
 	this.userIsLoggedIn = ko.computed(function() {
 		return self.user().is_logged_in;
-	})
+	});
 
 	// functions
 	this.clickUserLabel = function() {
@@ -34,13 +34,15 @@ var AppViewModel = function(json) {
 		$.post('/signup', {
 			username: self.userFormUsername(),
 			password: self.userFormPassword()
-		})
+		});
 	};
 
 	this.clickLogin = function() {
-		$.post('/login', {
-			username: self.userFormUsername(),
-			password: self.userFormPassword()
-		})
+		$.get('/login', function(data) {
+            var url = data['login_url'];
+            if (url) {
+                window.location = url;
+            }
+        });
 	};
 };
