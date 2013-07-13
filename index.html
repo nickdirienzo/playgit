@@ -75,10 +75,13 @@
                 </div>
                 <div class="widget">
                     <div class="widget-title">Pull Requests</div>
-
+                    <ul data-bind="template: {name: 'playlist-list-pr-tmpl', foreach: pr }"></ul>
                 </div>
             </div>
         </div>
+    </script>
+    <script type="text/html" id="playlist-list-pr-tmpl">
+       <a href="#"><li data-bind="text: name"></li></a> 
     </script>
     <script type="text/html" id="playlist-song-search-result-tmpl">
         <div class="playlist-song" data-bind="click: $parent.clickSearchResult">
