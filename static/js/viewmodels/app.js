@@ -38,14 +38,16 @@ var AppViewModel = function(json) {
 		$.get('/logout', function() {
 			location.reload();
 		});
-	}
+	};
+
 	this.newPlaylist = function() {
 		var playlistName = window.prompt('New playlist name?');
-		console.log(playlistName);
-		$.post('/create_playlist', {name: playlistName}, function() {
-			self.reloadPlaylists();
-		});
-	}
+        if (playlistName) {
+            $.post('/create_playlist', {name: playlistName}, function() {
+                self.reloadPlaylists();
+            });
+        }
+	};
 
 	// front end data
 	this.addPlaylists = function(_playlists) {
@@ -63,8 +65,8 @@ var AppViewModel = function(json) {
 			if(typeof callback === 'function') {
 				callback();
 			}
-		})
-	}
+		});
+	};
 	this.findPlaylist = function(id) {
 		toReturn = null;
 		ko.utils.arrayForEach(self.playlists(), function(playlist) {
@@ -74,7 +76,7 @@ var AppViewModel = function(json) {
 			}
 		});
 		return toReturn;
-	}
+	};
 
 	this.transition = function(template, data, noAnim) {
 		if(template == self.stateTemplate() && data == self.stateData()) return;
@@ -89,7 +91,7 @@ var AppViewModel = function(json) {
 			setHash();
 		} else {
 			if(template == 'homepage-tmpl') {
-				location.hash = ""
+				location.hash = "";
 			} else {
 				location.hash = template.substring(0, template.length-5);
 			}
@@ -103,7 +105,7 @@ var AppViewModel = function(json) {
 			self.stateTemplate(template);
 		});
 		$("#wrapper").slideDown(300);
-	}
+	};
 
 	this.clickLogin = function() {
 		$.get('/login', function(data) {
