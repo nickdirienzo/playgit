@@ -6,8 +6,8 @@ var AppViewModel = function(json) {
 		username: "Guest"
 	});
 
-	this.userLoginUsername = ko.observable("");
-	this.userLoginPassword = ko.observable("");
+	this.userFormUsername = ko.observable("");
+	this.userFormPassword = ko.observable("");
 
 	// data fields
 	this.playlists = ko.observableArray();
@@ -26,13 +26,17 @@ var AppViewModel = function(json) {
 			$("#user #user-login").fadeIn(150);	
 		});
 	};
-	this.clickRegister = function() {};
+	this.clickRegister = function() {
+		$.post('/signup', {
+			username: self.userFormUsername(),
+			password: self.userFormPassword()
+		})
+	};
 
-	this.submitLogin = function(formElement) {
-		debugger
+	this.clickLogin = function() {
 		$.post('/login', {
-			username: self.userLoginUsername(),
-			password: self.userLoginPassword()
+			username: self.userFormUsername(),
+			password: self.userFormPassword()
 		})
 	};
 };

@@ -54,8 +54,8 @@ def signup():
         db_session.commit()
         session['user_id'] = new_user.id
         return jsonify(success=True)
-    except sqlalchemy.exc.IntegrityError:
-        return jsonify(success=False)
+    except sqlalchemy.exc.IntegrityError as e:
+        return jsonify(success=False, error=repr(e))
 
 # API endpoints
 
@@ -113,9 +113,13 @@ def search_for_song(user):
 
 # Misc
 
-@app.route('/')
-def main(user=None):
+@app.route('/test')
+def testingPage(user):
     return render_template('user.html', user=user)
+
+@app.route('/')
+def main():
+    return render_template('index.html')
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):

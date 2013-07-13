@@ -17,19 +17,10 @@
                 <h1>Playgit</h1>
 
                 <div id="user">
-                    <span class="user-label" data-bind="text: userLabel, click: clickUserLabel"></span>
-                    <form method="POST" action="/login" id="user-login" data-bind="submit: submitLogin">
-                        <input type="text" name="username" placeholder="Username" data-bind="value: userLoginUsername">
-                        <input type="password" name="password" placeholder="Password" data-bind="value: userLoginPassword"><br />
-                        <button type="submit">Login</button>
-                        <button data-bind="click:clickRegister">Register</button>
-                    </form>
-
-                    <form method="POST" action="/signup" id="user-register">
-                        <input type="text" name="username" placeholder="Username">
-                        <input type="password" name="password" placeholder="Password">
-                        <input type="submit" value="Signup">
-                    </form>
+                    <input type="text" name="username" placeholder="Username" data-bind="value: userFormUsername">
+                    <input type="password" name="password" placeholder="Password" data-bind="value: userFormPassword"><br />
+                    <button data-bind="click:clickLogin">Login</button>
+                    <button data-bind="click:clickRegister">Register</button>
             </div>
         </div>
     </header>
