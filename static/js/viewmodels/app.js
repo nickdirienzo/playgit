@@ -40,10 +40,11 @@ var AppViewModel = function(json) {
 		});
 	};
 
-	this.addPlaylists = function(playlists) {
-		if(playlists) {
-			_.each(playlists, function(playlist) {
+	this.addPlaylists = function(_playlists) {
+		if(_playlists) {
+			_.each(_playlists, function(playlist) {
 				self.playlists.push(new PlaylistViewModel(playlist));
+				console.log(self.playlists());
 			});
 		}
 	};

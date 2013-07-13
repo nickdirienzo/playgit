@@ -62,6 +62,9 @@
             <h2>
                 <span data-bind="text: name"></span>
                 <span class="playlist-songsCount"><span data-bind="text: songsCount"></span> songs</span>
+                <input type="button" value="Fork" data-bind="visible: owner, click: clickFork">
+                <input type="button" value="Pull Request" data-bind="visible: parent, click: pullRequest">
+                <input type="button" value="Delete Playlist" data-bind="visible: owner, click: deletePlaylist">
             </h2>
             <div class="main-content">
                 <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs }"></div>
