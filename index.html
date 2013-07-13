@@ -12,6 +12,7 @@
     <script type="text/javascript" src="static/js/viewmodels/app.js"></script>
     <script type="text/javascript" src="static/js/viewmodels/playlist.js"></script>
     <script type="text/javascript" src="static/js/viewmodels/song.js"></script>
+    <script type="text/javascript" src="static/js/viewmodels/pr.js"></script>
     <title>Playgit</title>
 </head>
 <body>
@@ -128,6 +129,22 @@
             <span class="playlist-song-name" data-bind="text: name">Song name</span>
             <span class="playlist-song-artist" data-bind="text: artist">Artist name</span>
             <a class="playlist-song-remove" data-bind="click: $parent.removeSong">(remove)</a>
+        </div>
+    </script>
+    <script type="text/html" id="pr-tmpl">
+        <h2>
+            <div class="owner-name" data-bind="text: childName"></div>
+            <span data-bind="text: parentName"></span>
+        </h2>
+        <div class="main-content">
+            <div data-bind="visible: isLoading">Loading...</div>
+            <div class="diff" data-bind="foreach: diff">
+                <div class="playlist-song">
+                    <span class="diff-change" data-bind="text: change, css: { added: change == '+' }"></span>
+                    <span class="playlist-song-name" data-bind="text: songName"></span>
+                    <span class="playlist-song-artist" data-bind="text: songArtist"></span>
+                </div>
+            </div>
         </div>
     </script>
     <script type="text/javascript" src="static/js/app.js"></script>

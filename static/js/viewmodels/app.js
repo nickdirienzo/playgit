@@ -77,6 +77,11 @@ var AppViewModel = function(json) {
 		});
 		return toReturn;
 	};
+	this.findPR = function(id, callback) {
+		$.get('/pr/' + id, function(data) {
+			callback(data);
+		})
+	};
 
 	this.transition = function(template, data, noAnim) {
 		if(template == self.stateTemplate() && data == self.stateData()) return;
