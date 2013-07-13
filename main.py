@@ -24,7 +24,7 @@ def require_login(original_fn):
         return Response('Not allowed', 401)
     return new_fn
 
-@app.route('/auth', methods=['POST'])
+@app.route('/auth', methods=['GET', 'POST'])
 def auth():
     request_token = request.cookies.get('rt')
     request_token_secret = request.cookies.get('rts')
