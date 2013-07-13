@@ -50,7 +50,7 @@ def signup():
 # Misc
 
 @app.route('/')
-def main(user):
+def main(user=None):
     return render_template('user.html', user=user)
 
 @app.teardown_appcontext
