@@ -6,7 +6,7 @@ CREATE TABLE songs (
   album VARCHAR(100),
   artist VARCHAR(100),
   artwork_url VARCHAR(100),
-  key VARCHAR(100)
+  key VARCHAR(100) UNIQUE
 );
 
 DROP TABLE IF EXISTS playlists CASCADE;

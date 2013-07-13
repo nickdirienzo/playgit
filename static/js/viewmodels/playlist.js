@@ -60,23 +60,16 @@ var PlaylistViewModel = function(json) {
 	};
 
     this.commitChanges = function() {
-        var keys = [], songs = self.songs();
-        for (var i = 0; i < songs.length; i++) {
-            keys.push(songs[i].key);
-        }
         $.ajax({
             type: 'POST',
             contentType: 'application/json',
-            data: { 'song_keys': keys },
+            data: JSON.stringify({ 'songs': self.songs() }),
             dataType: 'json',
-            url: '/commit/' + self.id,
+            url: '/commit/' + self.id(),
             success: function(res) {
                 if (res.success) {
                     self.hasChanges(false);
                 }
-            },
-            failure: function() {
-                alert('Failure!');
             }
         });
     };
