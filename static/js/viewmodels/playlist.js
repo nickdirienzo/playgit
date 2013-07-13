@@ -88,7 +88,6 @@ var PlaylistViewModel = function(json) {
 	};
 
     this.commitChanges = function() {
-    	alert(self.id());
         $.ajax({
             type: 'POST',
             contentType: 'application/json',
