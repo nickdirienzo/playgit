@@ -87,7 +87,7 @@ def login():
         session['at'] = ''
         session['ats'] = ''
         rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET))
-        login_url = rdio.begin_authentication(callback_url=request.host + '/auth')
+        login_url = rdio.begin_authentication(callback_url='http://' + request.host + '/auth')
         session['rt'] = rdio.token[0]
         session['rts'] = rdio.token[1]
         return jsonify(login_url=login_url)
