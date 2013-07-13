@@ -79,7 +79,7 @@ var AppViewModel = function(json) {
 		});
 
 		if(toReturn == null) {
-			$.get('/playlist' + id, function(data) {
+			$.get('/playlist/' + id, function(data) {
 				callback(new PlaylistViewModel(data.playlist));
 			})
 		} else {
