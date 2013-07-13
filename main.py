@@ -271,15 +271,16 @@ def commit_playlist_changes(user, playlist_id):
             if new_playlist['key'] != playlist.key:
                 db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
                 db_session.commit()
+            activity = Activity(user.id, 'modified <a href="#playlist?id=' + playlist_id + '">' + playlist.name + '</a>.')
+            db_session.add(activity)
+            db_session.commit()
+            return jsonify(success=True)
         else:
             print 'epic fail.'
             return jsonify(error='failed to update rdio')
     except:
         return jsonify(error='failed to update rdio')
-    activity = Activity(user.id, 'modified <a href="#playlist?id=' + playlist_id + '">' + playlist.name + '</a>.')
-    db_session.add(activity)
-    db_session.commit()
-    return jsonify(success=True)
+    
 
 @app.route('/search')
 @require_login
