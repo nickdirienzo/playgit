@@ -56,7 +56,12 @@
         </div>
     </script>
     <script type="text/html" id="homepage-list-playlist-tmpl">
-       <a href="#"><li data-bind="text: name, click: clickPlaylist"></li></a>
+       <div class="playlist-card" data-bind="click:clickPlaylist">
+            <div class="playlist-card-background" data-bind="html: background"></div>
+            <div class="playlist-card-gradient-overlay"></div>
+            <div class="playlist-name" data-bind="text: name"></div>
+       </div>
+
     </script>
     <script type="text/html" id="playlist-tmpl">
         <div class="playlist">
