@@ -16,7 +16,7 @@ CREATE TABLE playlists (
   uid INTEGER NOT NULL REFERENCES users (id),
   name VARCHAR(100),
   parent INTEGER REFERENCES playlists (id),
-  create_date TIMESTAMP DEFAULT now(),
+  create_date TIMESTAMP DEFAULT now()
 );
 
 DROP TABLE IF EXISTS users CASCADE;
