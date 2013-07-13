@@ -15,7 +15,7 @@
 <body>
     <header>
         <div class="center">
-            <h1 data-bind="click: clickLogo">Playgit</h1>
+            <a href="#"><h1 data-bind="click: clickLogo">Playgit</h1></a>
 
             <div id="user" data-bind="if: userIsLoggedIn">
                 <span data-bind="text: userLabel"></span>
@@ -48,12 +48,12 @@
         <div class="sidebar">
             <div class="widget">
                 <div class="widget-title">Your Playlists</div>
-                <div data-bind="template:{ name: 'homepage-list-playlist-tmpl', foreach: playlists }"></div>
+                <ul class='homepage-list-playlist' data-bind="template:{ name: 'homepage-list-playlist-tmpl', foreach: playlists }"></ul>
             </div>
         </div>
     </script>
     <script type="text/html" id="homepage-list-playlist-tmpl">
-       <div data-bind="text: name, click: clickPlaylist">Playlist</div> 
+       <a href="#"><li data-bind="text: name, click: clickPlaylist"></li></a>
     </script>
     <script type="text/html" id="playlist-tmpl">
         <div class="playlist">
@@ -67,6 +67,10 @@
             <div class="sidebar">
                 <div class="widget">
                     <input type="text" id="playlist-search" placeholder="Search rdio for songs...">
+                </div>
+                <div class="widget">
+                    <div class="widget-title">Pull Requests</div>
+                    
                 </div>
             </div>
         </div>
