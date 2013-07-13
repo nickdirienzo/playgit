@@ -95,7 +95,9 @@ var PlaylistViewModel = function(json) {
 
 	this.pullRequest = function() {
 		$.get('/pr/' + self.id() + '/' + self.parent(), function(res) {
-			appVM.transition('playlist-tmpl', appVM.findPlaylist(self.parent()));
+            app.findPlaylist(self.parent(), function(playlist) {
+                appVM.transition('playlist-tmpl', playlist);
+            });
         });
 	};
 
