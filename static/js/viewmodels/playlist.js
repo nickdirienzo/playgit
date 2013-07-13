@@ -35,6 +35,15 @@ var PlaylistViewModel = function(json) {
 		return self.songs().length;
 	}, this);
 
+	this.background = ko.computed(function() {
+		var background = "";
+		for(var i = 0; i < 8; i ++) {
+			if(self.songs()[i]) {
+				background += '<img src="' + self.songs()[i].artwork_url + '" />';
+			}
+		}
+		return background;
+	});
 	this.clickPlaylist = function() {
 		appVM.transition('playlist-tmpl', self);
 	};
