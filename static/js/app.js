@@ -1,5 +1,5 @@
 var playlist = {
-	name: "Test Playlist",
+	name: "Test Playlist PETER",
 	songs: [
 		{ name: "Never Gonna Give You Up", artist: "Rick Astley", album: "Platnium Hits" },
 		{ name: "Get Lucky", artist: "Daft Punk", album: "Random Access Memoeries" }
@@ -25,6 +25,7 @@ $.get('/user', function(data) {
 });
 $.get("/playlists", function(data) {
 	appVM.addPlaylists(data.playlists);
+	appVM.addPlaylists([ playlist ]);
 })
 
 ko.applyBindings(appVM);

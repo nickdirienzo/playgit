@@ -1,7 +1,7 @@
 var SongViewModel = function(json, playlist) {
 	var self = this;
 
-	this.id = ko.observable(json.id);
+	this.key = ko.observable(json.key);
 	this.name = ko.observable(json.name);
 	this.artist = ko.observable(json.artist);
 	this.album = ko.observable(json.album);

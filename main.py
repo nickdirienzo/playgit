@@ -179,7 +179,7 @@ def commit_playlist_changes(user, playlist_id):
 @require_login
 def search_for_song(user):
     query = request.args.get('q')
-    types = ['Artist', 'Album', 'Track']
+    types = ['Track']
     rdio = AuthedRdio(session.get('at'), session.get('ats'))
     try:
         results = rdio.call('search', params={'query': query, 'types': ','.join(types)})['result']
