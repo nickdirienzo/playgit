@@ -1,12 +1,15 @@
 var playlist = {
+	id: 3,
 	name: "Test Playlist PETER",
 	songs: [
 		{ name: "Never Gonna Give You Up", artist: "Rick Astley", album: "Platnium Hits" },
 		{ name: "Get Lucky", artist: "Daft Punk", album: "Random Access Memoeries" }
+	],
+	pr: [
+		{ name: "PR 1", diff: [] }
 	]
 };
 var playlist2 = {
-	id: 3,
 	name: "Test Playlist 2",
 	songs: [
 		{ name: "Can't Hold Us", artist: "Macklemore", album: "The Heist" },

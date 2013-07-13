@@ -11,6 +11,7 @@ var PlaylistViewModel = function(json) {
  	this.searchQuery = ko.observable("");
  	this.searchTimeout = null;
  	this.searchResults = ko.observableArray();
+ 	this.pr = ko.observableArray(json.pr);
 
 	this.songsCount = ko.computed(function() {
 		return this.songs().length;
