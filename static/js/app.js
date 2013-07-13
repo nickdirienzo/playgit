@@ -29,7 +29,6 @@ $.get('/user', function(data) {
 
 	$.get("/playlists", function(data) {
 		appVM.addPlaylists(data.playlists);
-		appVM.addPlaylists([ playlist ]);
 
 		if(window.location.hash.indexOf('playlist') == 1) {
 			var targetPlaylist = appVM.findPlaylist(parseInt(getQueryVariable('id')));
