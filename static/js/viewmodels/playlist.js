@@ -57,5 +57,9 @@ var PlaylistViewModel = function(json) {
 		})
 		console.log(JSON.stringify(songs));
 	}
+
+	this.setHash = function() {
+		location.hash = "#playlist?id=" + self.id();
+	}
 };
 
