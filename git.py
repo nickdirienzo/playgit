@@ -1,4 +1,4 @@
-import os, subprocess, shutil
+import os, subprocess, shutil, re, fileinput
 
 class Git():
     _root = '/home/patrick/code/playgit/'
@@ -22,7 +22,6 @@ class Git():
         return tracks
 
     def _createRepo(self):
-
         #create the directory for the repo for the playlist
         os.makedirs(self._playlistDir)
         os.chdir(self._playlistDir)
@@ -43,17 +42,11 @@ class Git():
         subprocess.call('git commit -am "' + message + '"', shell=True)
         pass
 
-    def add(self, id, index=None):
-        if index:
-            pass
-        else:
-            os.chdir(self._playlistDir)
-            playlistFile = open(self._fileName, 'a')
-            playlistFile.write(id + '\n')
-            playlistFile.close()
-
-    def remove(self, id):
-        pass
+    def update(self, songs):
+        os.chdir(self._playlistDir)
+        with open(self._fileName, 'wb') as f:
+            for song in songs:
+                f.write(song + '\n')
 
     #just copy the directory?
     def fork(self, playlistId):
@@ -66,10 +59,26 @@ class Git():
     def merge(self, remote):
         os.chdir(self._playlistDir)
         subprocess.call('git pull ' + self._root + self._dirName + remote + ' master', shell=True)
+        self.commit("Merged")
         pass
 
-    def diff(self):
-        pass
+    def diff(self, remote):
+        os.chdir(self._playlistDir)
+        subprocess.call('git fetch ' + self._root + self._dirName + remote + 
+            ' master:' + remote + '/master', shell=True)
+        diffOutput = subprocess.check_output('git diff master..' + remote + '/master', shell=True)
+        
+        gotToDiffLines = False
+        changes = []
+        for line in diffOutput.split('\n'):
+            if re.search(r'^@@', line):
+                gotToDiffLines = True
+            if gotToDiffLines:
+                if len(line) > 0 and (line[0] == '-' or line[0] == '+'):
+                    changes.append([line[0], line[1:]])
+
+        subprocess.call('git branch -D ' + remote + '/master', shell=True)
+        return changes
 
     def delete(self):
         shutil.rmtree(self._playlistDir)
@@ -77,10 +86,8 @@ class Git():
     def getPlaylistId(self):
         return self.playlistId
 
-git = Git("shithappens")
-anotherGit = git.fork("anothershit")
+    def log(self):
+        logs = []
+        logOutput = subprocess.check_output('git log --pretty=format:"%s"', shell=True)
 
-anotherGit.add("omg a song")
-anotherGit.commit("Added a song")
-
-git.merge("anothershit")
+        return logOutput.split('\n')

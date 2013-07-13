@@ -9,6 +9,8 @@ db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
 
+from git import Git
+
 Base = declarative_base()
 Base.query = db_session.query_property()
 
@@ -41,20 +43,20 @@ class Playlist(Base):
     parent = Column(Integer)
     create_date = Column(DateTime, default=datetime.datetime.now)
     path = Column(String(100))
+    git = None
 
     def __init__(self, uid, name, path=None, parent=None):
         self.uid = uid
         self.name = name
 
         if path is None:
-            # TODO (pat) create/clone git repo for this playlist
-            pass
+            git = Git(uid + '/' + name)
 
         self.path = path
         self.parent = parent
 
     def __repr__(self):
-        return '<Playlist %r %s>' % (self.name, self.path)
+        return '<Playlist %r %r>' % (self.name, self.path)
 
     def toDict(self, with_songs=False):
         info = {
@@ -68,11 +70,35 @@ class Playlist(Base):
 
         if with_songs:
             # Load in song info
-            songs = []
-            # TODO (pat) get the song ids out of the repo
+            songs = self.git.getTrackIds()
             info['songs'] = songs
 
         return info
+
+    def getLog(self):
+        return git.log()
+
+class Activity(Base):
+    __tablename__ = 'activities'
+    id = Column(Integer, primary_key=True)
+    uid = Column(Integer)
+    activity_date = Column(DateTime, default=datetime.datetime.now)
+    description = Column(String(255))
+
+    def __init__(self, uid, description):
+        self.uid = uid
+        self.description = description
+
+    def __repr__(self):
+        return '<Activity %r>' % self.id
+
+    def toDict(self):
+        return {
+            'id': self.id,
+            'user': User.query.filter(User.id == self.uid).first().toDict(),
+            'activity_date': self.activity_date,
+            'description': self.description,
+        }
 
 class User(Base):
     __tablename__ = 'users'

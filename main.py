@@ -10,7 +10,7 @@ app.secret_key = 'yoloswag'
 RDIO_CONSUMER_KEY = 'c8pehjw6u8wdatpgxmq8jqkw'
 RDIO_CONSUMER_SECRET = '9ADNaSuKSG'
 
-from database import db_session, User, Playlist, Song
+from database import db_session, User, Playlist, Song, Activity
 
 # User handling
 
@@ -53,6 +53,14 @@ def get_current_user():
             return jsonify(id=user.id, username=user.username, is_logged_in=True)
 
     return jsonify(is_logged_in=False)
+
+@app.route('/user/<user_id>')
+def get_user(user_id):
+    user = User.query.filter(User.id == user_id).first()
+    if user:
+        return jsonify(id=user.id, username=user.username)
+
+    return Response('No such user', 404)
 
 @app.route('/logout')
 def logout():
@@ -112,7 +120,14 @@ def create_playlist(user):
 @app.route('/fork_playlist/<playlist_id>')
 @require_login
 def fork_playlist(user, playlist_id):
-    pass
+    try:
+        playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
+        new_playlist = Playlist(uid=user.id, name=playlist.name, parent=playlist.id)
+        db_session.add(new_playlist)
+        db_session.commit()
+        return jsonify(success=True, playlist=new_playlist.toDict(with_songs=True))
+    except Exception as e:
+        return jsonify(success=False, error='%s' % repr(e))
 
 @app.route('/playlist/<playlist_id>')
 @require_login
@@ -125,7 +140,11 @@ def get_playlist(user, playlist_id):
 
 @app.route('/playlist/<playlist_id>/log')
 def get_playlist_log(user, playlist_id):
-    pass
+    playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
+    if not playlist:
+        return Response('No such playlist', 404)
+
+    return jsonify(playlist.getLog())
 
 @app.route('/diff/<playlist_id1>/<rev1>/<playlist_id2>/<rev2>')
 @require_login
@@ -140,14 +159,19 @@ def commit_playlist_changes(user, playlist_id):
 @app.route('/search')
 @require_login
 def search_for_song(user):
-    # TODO nick
+    # TODO (nick)
     pass
+
+@app.route('/activity')
+def get_latest_activity():
+    latest_activity = Activity.query.order_by(Activity.activity_date.desc()).limit(25).all()
+    return jsonify([a.toDict() for a in latest_activity])
 
 # Misc
 
 @app.route('/test')
-def testingPage(user):
-    return render_template('user.html', user=user)
+def testingPage():
+    return render_template('test.html')
 
 @app.route('/')
 def main():

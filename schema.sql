@@ -26,4 +26,13 @@ CREATE TABLE users (
   id INTEGER PRIMARY KEY DEFAULT nextval('user_id_seq'),
   username VARCHAR(100) UNIQUE,
   password VARCHAR(100)
-)
+);
+
+DROP TABLE IF EXISTS activities CASCADE;
+CREATE SEQUENCE activity_id_seq;
+CREATE TABLE activities (
+    id INTEGER PRIMARY KEY DEFAULT nextval('activity_id_seq'),
+    uid INTEGER NOT NULL REFERENCES users (id),
+    activity_date TIMESTAMP DEFAULT now(),
+    description VARCHAR(255)
+);
