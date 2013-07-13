@@ -1,7 +1,7 @@
 import os, subprocess, shutil, re, fileinput
 
 class Git():
-    _root = '/home/patrick/code/playgit/'
+    _root = os.getcwd()
     _fileName = 'playlist.txt'
     _dirName = 'playlists/'
     _playlistId = ''
