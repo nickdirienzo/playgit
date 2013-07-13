@@ -55,9 +55,9 @@ class Playlist(Base):
     def initGit(self, id):
         if self.parent:
             parentGit = Git(self.parent)
-            git = parentGit.fork(id)
+            self.git = parentGit.fork(id)
         else:
-            git = Git(id)
+            self.git = Git(id)
 
     def toDict(self, with_songs=False):
         info = {
@@ -66,7 +66,6 @@ class Playlist(Base):
             'name': self.name,
             'parent': self.parent,
             'create_date': self.create_date,
-            'path': self.path
         }
 
         if with_songs:
@@ -77,7 +76,7 @@ class Playlist(Base):
         return info
 
     def getLog(self):
-        return git.log()
+        return self.git.log()
 
 class Activity(Base):
     __tablename__ = 'activities'

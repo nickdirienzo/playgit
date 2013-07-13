@@ -26,8 +26,8 @@ def require_login(original_fn):
 
 @app.route('/auth', methods=['GET', 'POST'])
 def auth():
-    request_token = request.cookies.get('rt')
-    request_token_secret = request.cookies.get('rts')
+    request_token = session.get('rt')
+    request_token_secret = session.get('rts')
     verifier = request.args.get('oauth_verifier', '')
     if request_token and request_token_secret and verifier:
         rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (request_token, request_token_secret))
@@ -36,12 +36,19 @@ def auth():
         session['ats'] = rdio.token[1]
         session['rt'] = ''
         session['rts'] = ''
-        current_user = rdio.call('currentUser')['result']
-        print current_user
-        #session['user_id'] = 1 # Hold until I know what this json is
+        rdio_data = rdio.call('currentUser')['result']
+        username = rdio_data['url'].replace('/', ' ').split()[-1]
+        print 'Creating user model.'
+        user = User(username=username, token=rdio_data['key'], icon=rdio_data['icon'], first_name=rdio_data['firstName'], last_name=rdio_data['lastName'])
+        db_session.add(user)
+        db_session.commit()
+        print 'Committed.'
+        session['user_id'] = user.id
+        print session
         return redirect(url_for('main'))
     else:
         # Login failed, clear everything
+        print 'Auth failed.'
         logout()
         return redirect(url_for('main'))
 
@@ -51,7 +58,7 @@ def get_current_user():
     if user_id:
         user = User.query.filter(User.id == user_id).first()
         if user:
-            return jsonify(id=user.id, username=user.username, is_logged_in=True)
+            return jsonify(id=user.id, username=user.username, icon=user.icon, first_name=user.first_name, last_name=user.last_name, is_logged_in=True)
 
     return jsonify(is_logged_in=False)
 
@@ -59,7 +66,7 @@ def get_current_user():
 def get_user(user_id):
     user = User.query.filter(User.id == user_id).first()
     if user:
-        return jsonify(id=user.id, username=user.username)
+        return jsonify(id=user.id, username=user.username, icon=user.icon, first_name=user.first_name, last_name=user.last_name, is_logged_in=True)
 
     return Response('No such user', 404)
 
