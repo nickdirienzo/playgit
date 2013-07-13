@@ -17,7 +17,6 @@ CREATE TABLE playlists (
   name VARCHAR(100),
   parent INTEGER REFERENCES playlists (id),
   create_date TIMESTAMP DEFAULT now(),
-  path VARCHAR(100)
 );
 
 DROP TABLE IF EXISTS users CASCADE;

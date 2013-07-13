@@ -42,7 +42,6 @@ class Playlist(Base):
     name = Column(String(100))
     parent = Column(Integer)
     create_date = Column(DateTime, default=datetime.datetime.now)
-    path = Column(String(100))
     git = None
 
     def __init__(self, uid, name, parent=None):

@@ -112,7 +112,8 @@ def create_playlist(user):
         playlist = Playlist(uid=user.id, name=name, parent=parent)
         db_session.add(playlist)
         db_session.commit()
-        return jsonify(success=True)
+        playlist.initGit(playlist.id) # xxx might not work
+        return jsonify(success=True, playlist=playlist.toDict())
     except Exception as e:
         return jsonify(success=False, error='%s' % repr(e))
 
