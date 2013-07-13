@@ -15,10 +15,9 @@ $.get('/user', function(data) {
 	appVM.user(data);
 	appVM.isLoaded(true);
 
-	$.get("/playlists", function(data) {
-		appVM.addPlaylists(data.playlists);
+	appVM.reloadPlaylists(function() {
 		$(window).hashchange();
-	})
+	});
 });
 
 ko.applyBindings(appVM);

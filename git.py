@@ -94,7 +94,7 @@ class Git():
         return self.playlistId
 
     def log(self):
-        logs = []
+        os.chdir(self._playlistDir)
         logOutput = subprocess.check_output('git log --pretty=format:"%s"', shell=True)
 
         return logOutput.split('\n')

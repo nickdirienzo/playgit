@@ -243,6 +243,12 @@ header h1 a {
 	color: #fff;
 }
 
+a.small-icon-link{
+	font-family: 'iconSweetsRegular';
+	font-size: 14px;
+	text-decoration: none;
+}
+
 #activity-feed {
     margin: 0;
     padding: 0;
@@ -285,4 +291,14 @@ header h1 a {
     font-size: 12pt;
     font-weight: normal;
     margin-bottom: 2px;
+}
+
+.widget .history {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.widget .history li {
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.11);
 }
