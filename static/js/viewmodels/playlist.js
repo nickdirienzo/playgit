@@ -5,13 +5,15 @@ var PlaylistViewModel = function(json) {
 	this.name = ko.observable(json.name);
 	this.parent = ko.observable(json.parent);
 	this.songs = ko.observableArray();
-	_.each(json.songs, function(song) {
-		self.songs.push(new SongViewModel(song,self));
-	});
+
     this.searchQuery = ko.observable("");
     this.searchTimeout = null;
     this.searchResults = ko.observableArray();
-    this.pr = ko.observableArray(json.pr);
+    this.pr = ko.observableArray(json.pr || []);
+
+    $.get('/playlist/' + this.id(), function(data) {
+        self.songs(data.songs);
+    });
 
 	this.songsCount = ko.computed(function() {
 		return this.songs().length;
@@ -53,7 +55,7 @@ var PlaylistViewModel = function(json) {
 	this.beforeTransition = function() {
 		songs = [];
 		ko.utils.arrayForEach(self.songs(), function(item) {
-			songs.push(item.toJSON());
+			songs.push(item);
 		});
 		console.log(JSON.stringify(songs));
 	};
@@ -63,9 +65,15 @@ var PlaylistViewModel = function(json) {
             $(elem).hide().slideDown();
         }
     };
+    this.fadeOut = function(elem) {
+        if (elem.nodeType === 1) {
+            $(elem).slideUp();
+        }
+    };
 
 	this.setHash = function() {
 		location.hash = "#playlist?id=" + self.id();
 	};
+
 };
 
