@@ -13,9 +13,7 @@ var AppViewModel = function(json) {
 	this.isLoaded = ko.observable(false);
 
 	this.playlists = ko.observableArray();
-	_.each(json.playlists, function(playlist) {
-		self.playlists.push(new PlaylistViewModel(playlist));
-	});
+	if(json) { self.addPlaylists(json.playlists) }
 
 	// state
 	this.stateTemplate = ko.observable('homepage-tmpl');
@@ -39,6 +37,14 @@ var AppViewModel = function(json) {
 			$("#user #user-login").fadeIn(150);	
 		});
 	};
+
+	this.addPlaylists = function(playlists) {
+		if(playlists) {
+			_.each(playlists, function(playlist) {
+				self.playlists.push(new PlaylistViewModel(playlist));
+			});
+		}
+	}
 
 	this.transition = function(template, data) {
 		if(template == self.stateTemplate()) return;
