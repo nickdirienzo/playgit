@@ -16,7 +16,6 @@ html, body {
 header {
 	padding: 20px 0;
 	background: -webkit-linear-gradient(top, #60047A, #54046B);
-	margin-bottom: 10px;
 	border-bottom: 1px solid #430454;
 	box-shadow: 0px 0px 20px rgba(0,0,0,0.8);
 	overflow: hidden;
@@ -87,4 +86,98 @@ header h1 {
 }
 #welcome .form button:hover {
 	opacity: 0.8;
+}
+
+#wrapper {
+	overflow: hidden;
+	padding-top: 20px;
+}
+
+.main-content {
+	width: 70%;
+	box-sizing: border-box;
+	padding: 20px;
+	background: rgba(0,0,0,0.3);
+	border: 1px solid rgba(0,0,0,0.7);
+	box-shadow: 0px 0px 20px rgba(0,0,0,0.6) inset;
+	border-radius: 10px;
+	float: left;
+}
+
+.playlist h2 {
+	margin-bottom: 5px;
+}
+
+.playlist-songsCount {
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.7);
+	font-weight: normal;
+}
+
+.playlist-song {
+	border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+	padding: 10px;
+	overflow: hidden;
+}
+
+.playlist-song-name {
+	font-size: 18px;
+	line-height: 25px;
+	font-weight: bold;
+}
+.playlist-song-artist {
+	font-size: 11px;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.7);
+}
+.playlist-song-remove {
+	float: right;
+	font-size: 11px;
+	line-height: 25px; 
+	opacity: 0;
+	transition: 0.3s opacity;
+}
+.playlist-song:hover .playlist-song-remove {
+	opacity: 0.7;
+}
+.playlist-song:hover .playlist-song-remove:hover {
+	opacity: 0.5;
+}
+input#playlist-search {
+	width: 99%;
+	padding: 10px;
+	font-size: 15px;
+	font-family: "Helvetica Neue";
+	background: rgba(0,0,0,0.15);
+	border: 1px solid rgba(0,0,0,0.6);
+	border-radius: 5px;
+	box-sizing: border-box;
+	color: rgba(255, 255, 255, 0.7);
+}
+input#playlist-search::-webkit-input-placeholder { color: rgba(255, 255, 255, 0.1); }
+
+.sidebar {
+	width: 28%;
+	float: right;	
+}
+
+.sidebar .widget {
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.sidebar .widget .widget-title {
+	font-size: 20px;
+	font-weight: bold;
+	text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+	margin-bottom: 5px;
+	color: #fff;
+}
+a {
+	color: inherit;
+	text-decoration: none;
+	opacity: 1;
+	transition: 0.2s opacity;
+}
+a:hover {
+	opacity: 0.7;
 }

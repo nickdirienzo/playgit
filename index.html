@@ -8,23 +8,23 @@
     <script type="text/javascript" src="static/js/lib/knockout-2.3.0.js"></script>
 
     <script type="text/javascript" src="static/js/viewmodels/app.js"></script>
-        <script type="text/javascript" src="static/js/viewmodels/playlist.js"></script>
-        <title>Playgit</title>
-    </head>
-    <body>
-        <header>
-            <div class="center">
-                <h1>Playgit</h1>
+    <script type="text/javascript" src="static/js/viewmodels/playlist.js"></script>
+    <script type="text/javascript" src="static/js/viewmodels/song.js"></script>
+    <title>Playgit</title>
+</head>
+<body>
+    <header>
+        <div class="center">
+            <h1 data-bind="click: clickLogo">Playgit</h1>
 
-                <div id="user" data-bind="if: userIsLoggedIn">
-                    <span data-bind="text: userLabel"></span>
-                </div>
+            <div id="user" data-bind="if: userIsLoggedIn">
+                <span data-bind="text: userLabel"></span>
             </div>
         </div>
     </header>
 
-    <div class="center">
-        <div data-bind="ifnot: userIsLoggedIn" id="welcome">
+    <div class="center" data-bind="if: isLoaded">
+        <div data-bind="ifnot: userIsLoggedIn" id="welcome"> 
             <h2>Some really inspirational text.</h2>
             <p class="desc">Some really bullshit blurb, talking about how inspiration our app is, how this will change how we live our lives, and how we will get 15mm funding.</p>
             <div class="form">
@@ -34,20 +34,48 @@
             </div>
         </div>
         <div data-bind="if: userIsLoggedIn">
-            <div data-bind="template: {name: 'playlist-tmpl', foreach: playlists}"></div>
+            <div id="wrapper" data-bind="template: { name: stateTemplate, data: stateData }"></div>
         </div>
     </div>
 
+    <script type="text/html" id="null-tmpl">
+        <div></div>
+    </script>
+    <script type="text/html" id="homepage-tmpl">
+        <div class="main-content">
 
+        </div>
+        <div class="sidebar">
+            <div class="widget">
+                <div class="widget-title">Your Playlists</div>
+                <div data-bind="template:{ name: 'homepage-list-playlist-tmpl', foreach: playlists }"></div>
+            </div>
+        </div>
+    </script>
+    <script type="text/html" id="homepage-list-playlist-tmpl">
+       <div data-bind="text: name, click: clickPlaylist">Playlist</div> 
+    </script>
     <script type="text/html" id="playlist-tmpl">
-        <b data-bind="text: name">Hi?</b>
-        <span data-bind="text: songsCount">Hi</span>
-        <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs }"></div>
+        <div class="playlist">
+            <h2>
+                <span data-bind="text: name"></span>
+                <span class="playlist-songsCount"><span data-bind="text: songsCount"></span> songs</span>
+            </h2>
+            <div class="main-content">
+                <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs }"></div>
+            </div>
+            <div class="sidebar">
+                <div class="widget">
+                    <input type="text" id="playlist-search" placeholder="Search rdio for songs...">
+                </div>
+            </div>
+        </div>
     </script>
     <script type="text/html" id="playlist-song-tmpl">
         <div class="playlist-song">
-            <b data-bind="text: name">Song name</b>
-            <span data-bind="text: artist">Artist name</span>
+            <span class="playlist-song-name" data-bind="text: name">Song name</span>
+            <span class="playlist-song-artist" data-bind="text: artist">Artist name</span>
+            <a href="#" class="playlist-song-remove" data-bind="click: removeSong">(remove)</a>
         </div>
     </script>
     <script type="text/javascript" src="static/js/app.js"></script>
