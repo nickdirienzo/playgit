@@ -43,12 +43,11 @@ def auth():
         rdio_data = rdio.call('currentUser')['result']
         username = rdio_data['url'].replace('/', ' ').split()[-1]
         print 'Creating user model.'
-        try:
+        user = User.query.filter(User.username == username).first()
+        if user is None:
             user = User(username=username, token=rdio_data['key'], icon=rdio_data['icon'], first_name=rdio_data['firstName'], last_name=rdio_data['lastName'])
             db_session.add(user)
             db_session.commit()
-        except sqlalchemy.exc.IntegrityError:
-            user = User.query.filter(User.username == username).first()
         print 'Committed.'
         session['user_id'] = user.id
         print session
