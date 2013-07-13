@@ -7,6 +7,7 @@ var PlaylistViewModel = function(json) {
 	this.songs = ko.observableArray();
 
 	this.owner = ko.observable(json.uid != appVM.user.id);
+    this.username = ko.observable('');
     this.hasChanges = ko.observable(false);
 
     this.searchQuery = ko.observable("");
@@ -18,6 +19,10 @@ var PlaylistViewModel = function(json) {
     $.get('/playlist/' + this.id(), function(data) {
         self.isLoading(false);
         self.songs(data.playlist.songs);
+    });
+
+    $.get('/user/' + json.uid, function(data) {
+        self.username(data.username);
     });
 
 	this.songsCount = ko.computed(function() {

@@ -214,6 +214,7 @@ def commit_playlist_changes(user, playlist_id):
     song_keys = set(song_keys)
     added = song_keys - current_songs
     removed = current_songs - song_keys
+    rdio = AuthedRdio(session.get('at'), session.get('ats'))
     if len(added) > 0:
         added_msg = 'Added '
         for a in added:
@@ -231,6 +232,20 @@ def commit_playlist_changes(user, playlist_id):
     msg = added_msg + ' ' + removed_msg
     playlist.git().update(song_keys)
     playlist.git().commit(msg)
+    
+    success = rdio.call('deletePlaylist', params={'playlist': playlist['key']})['result']
+    print success
+    if success:
+        print 'deleted successfully...'
+        new_playlist = rdio.call('createPlaylist', params={'name': playlist['name'], 'description': playlist['description'], 'tracks': ','.join(song_keys)})['result']
+        print new_playlist
+        print 'created new playlist?'
+        if new_playlist['key'] != playlist['key']:
+            db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
+            db_session.commit()
+    else:
+        print 'epic fail.'
+        return jsonify(error='failed to update rdio')
     return jsonify(success=True)
 
 @app.route('/search')
