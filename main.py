@@ -115,9 +115,12 @@ def login():
     if access_token and access_token_secret:
         rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (access_token, access_token_secret))
         try:
-            current_user = rdio.call('currentUser')['result']
+            rdio_data = rdio.call('currentUser', params={'extras': 'username,displayName'})['result']
+            username = rdio_data['username']
+            user = User.query.filter(User.username == username).first()
+            session['user_id'] = user.id
             print current_user
-            return jsonify(current_user=current_user)
+            return redirect(url_for('main'))
         except urllib2.HTTPError:
             # Something went horribly wrong, like Rdio told us our app sucks.
             logout()
@@ -144,7 +147,9 @@ def get_user_playlists(user):
 @app.route('/create_playlist', methods=['POST'])
 @require_login
 def create_playlist(user):
+    print 'tt'
     try:
+        print 'test'
         name = request.form['name']
         if 'parent' in request.form:
             parent = int(request.form['parent'])
@@ -166,11 +171,11 @@ def create_playlist(user):
 def fork_playlist(user, playlist_id):
     try:
         playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
-        new_playlist = Playlist(uid=user.id, name=playlist.name, parent=playlist.id)
+        new_playlist = Playlist(uid=user.id, name=playlist.name, parent=playlist.id, key=playlist.key, description=playlist.description)
         db_session.add(new_playlist)
         db_session.commit()
         new_playlist.initGit()
-        fork_activity = Activity(user.id, " forked playlist <a href='#playlist?id=%d'>%s</a>" % (new_playlist.id, playlist.name))
+        fork_activity = Activity(user.id, " forked <a href='#playlist?id=%d'>%s</a>" % (new_playlist.id, playlist.name))
         db_session.add(fork_activity)
         db_session.commit()
         return jsonify(success=True, playlist=new_playlist.toDict(with_songs=True))
@@ -273,26 +278,20 @@ def commit_playlist_changes(user, playlist_id):
     db_session.add(activity)
     db_session.commit()
 
-    new_playlist = rdio.call('createPlaylist', params={'name': '%s (Old)' % playlist.name, 'description': playlist.description, 'tracks': ','.join(current_songs)})['result']
-    if new_playlist['name'] == '%s (Old)' % playlist.name:
-        # Confirmation of backup
+    if playlist.key:
         reply = rdio.call('deletePlaylist', params={'playlist': playlist.key})
-        print reply
-        try:
-            success = reply['result']
-            if success:
-                backup = new_playlist
-                new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': playlist.description, 'tracks': ','.join(song_keys)})['result']
-                if new_playlist['name'] == playlist.name:
-                    print 'created new playlist'
-                    if new_playlist['key'] != playlist.key:
-                        db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
-                        db_session.commit()
-                    rdio.call('deletePlaylist', params={'playlist': backup['key']})
-                    return jsonify(sync=True, commit=True)
-        except KeyError as e:
-            print repr(e)
-            return jsonify(sync=False, commit=True)
+    try:
+        print 'inside'
+        new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': 'test', 'tracks': ','.join(song_keys)})['result']
+        if new_playlist['name'] == playlist.name:
+            print 'created new playlist'
+            if new_playlist['key'] != playlist.key:
+                db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
+                db_session.commit()
+            return jsonify(sync=True, commit=True)
+    except KeyError as e:
+        print repr(e)
+        return jsonify(sync=False, commit=True)
 
 @app.route('/search')
 @require_login
@@ -320,6 +319,25 @@ def pull_request(user, forked_playlist_id, parent_playlist_id):
         return jsonify(error='invalid playlist id')
     pr = PullRequest(parent.uid, parent.id, session.get('user_id'), fork.id, False, None, datetime.datetime.now())
     db_session.add(pr)
+    db_session.commit()
+    pr_activity = Activity(user.id, 'initiated a Pull Request for <a href="#playlist?id=%d">%s</a>' % (parent.id, parent.name))
+    db_session.add(pr_activity)
+    db_session.commit()
+    return jsonify(success=True)
+
+@app.route('/pr/<parent_playlist_id>/<forked_playlist_id>/accept')
+@require_login
+def accept_pull_request(user, parent_playlist_id, forked_playlist_id):
+    parent = Playlist.query.filter(Playlist.id == parent_playlist_id and Playlist.uid == user.id).first()
+    forked = Playlist.query.filter(Playlist.id == forked_playlist_id).first()
+    if not parent or not forked:
+        return jsonify(error='invalid playlist id')
+    fork_owner = User.query.filter(User.id == forked.uid).first()
+    db_session.query(PullRequest).filter(PullRequest.parent_uid == user.id and PullRequest.parent_pid == parent_playlist_id and PullRequest.child_pid == forked_playlist_id).update({'accepted': True, 'accepted_on': datetime.datetime.now()})
+    db_session.commit()
+    parent.git().merge(str(forked_playlist_id), parent.name, forked.name)
+    pr_activity = Activity(user.id, " accepted a pull request from %s for <a href='#playlist?id=%d'>%s</a>" % (fork_owner.username, parent.id, parent.name))
+    db_session.add(pr_activity)
     db_session.commit()
     return jsonify(success=True)
 

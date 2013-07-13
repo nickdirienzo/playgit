@@ -9,6 +9,7 @@ var PlaylistViewModel = function(json) {
 	this.owner = ko.observable(json.uid != appVM.user.id); // TODO flip this
     this.username = ko.observable('');
     this.hasChanges = ko.observable(false);
+    this.commitLabel = ko.observable("");
 
     this.searchQuery = ko.observable("");
     this.searchTimeout = null;
@@ -16,9 +17,12 @@ var PlaylistViewModel = function(json) {
     this.pr = ko.observableArray();
 
     this.history = ko.observableArray();
-    $.get('/playlist/' + this.id() + '/log', function(data) {
-        self.history(data.history);
-    });
+    this.refreshHistory = function() {
+        $.get('/playlist/' + this.id() + '/log', function(data) {
+            self.history(data.history);
+        });
+    };
+    this.refreshHistory();
 
     this.isLoading = ko.observable(true);
     $.get('/playlist/' + this.id(), function(data) {
@@ -27,6 +31,8 @@ var PlaylistViewModel = function(json) {
         _.each(data.playlist.pull_requests, function(pr) {
         	self.pr.push(new PRModel(pr));
         });
+        self.pr(data.playlist.pull_requests);
+        $('.playlist-song.added').removeClass('added');
     });
 
     $.get('/user/' + json.uid, function(data) {
@@ -39,9 +45,10 @@ var PlaylistViewModel = function(json) {
 
 	this.background = ko.computed(function() {
 		var background = "";
-		for(var i = 0; i < 8; i ++) {
-			if(self.songs()[i]) {
-				background += '<img src="' + self.songs()[i].artwork_url + '" />';
+		for(var i = 0; i < 4; i ++) {
+            var song = self.songs()[Math.floor(Math.random()*self.songs().length)];
+			if(song) {
+				background += '<img src="' + song.artwork_url + '" />';
 			}
 		}
 		return background;
@@ -59,6 +66,7 @@ var PlaylistViewModel = function(json) {
 		});
 
         self.hasChanges(true);
+        self.commitLabel("Commit changes");
 
 		$("#playlist-search-results").slideUp(300, function() {
 			self.searchResults.removeAll();
@@ -101,6 +109,7 @@ var PlaylistViewModel = function(json) {
 	this.removeSong = function(song) {
 		self.songs.remove(song);
         self.hasChanges(true);
+        self.commitLabel("Commit changes");
 	};
 	this.doSearch = function() {
 		clearTimeout(self.searchTimeout);
@@ -116,6 +125,7 @@ var PlaylistViewModel = function(json) {
 	};
 
     this.commitChanges = function() {
+        self.commitLabel("Committing...");
         $.ajax({
             type: 'POST',
             contentType: 'application/json',
@@ -123,8 +133,11 @@ var PlaylistViewModel = function(json) {
             dataType: 'json',
             url: '/commit/' + self.id(),
             success: function(res) {
+                self.commitLabel("");
                 if (res.commit) {
                     self.hasChanges(false);
+                    self.refreshHistory();
+                    $('.playlist-song.added').removeClass('added');
                 }
             }
         });
@@ -132,7 +145,7 @@ var PlaylistViewModel = function(json) {
 
     this.fadeIn = function(elem) {
         if (elem.nodeType === 1) {
-            $(elem).hide().slideDown();
+            $(elem).hide().addClass('added').slideDown();
         }
     };
     this.fadeOut = function(elem) {

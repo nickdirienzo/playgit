@@ -63,11 +63,10 @@ class Git():
         return Git(playlistId)
 
     #pull in remote branch and then merge that branch into master.
-    def merge(self, remote):
+    def merge(self, remote, parent_playlist, fork_playlist):
         os.chdir(self._playlistDir)
-        subprocess.call('git pull ' + self._root + self._dirName + remote + ' master', shell=True)
-        self.commit("Merged")
-        pass
+        subprocess.call('git pull ' + os.path.join(self._root, self._dirName, remote) + ' master', shell=True)
+        self.commit("Pull request accepted from %s to %s" % (fork_playlist, parent_playlist))
 
     def diff(self, remote):
         os.chdir(self._playlistDir)
