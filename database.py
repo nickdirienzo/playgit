@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -9,6 +9,50 @@ db_session = scoped_session(sessionmaker(autocommit=False,
 
 Base = declarative_base()
 Base.query = db_session.query_property()
+
+class Song(Base):
+    __tablename__ = 'songs'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100))
+    album = Column(String(100))
+    artist = Column(String(100))
+    artwork_url = Column(String(100))
+    year = Column(Integer)
+    genre = Column(String(100))
+
+    def __init__(self, name, album=None, artist=None, artwork_url=None, year=None, genre=None):
+        self.name = name
+        self.album = album
+        self.artist = artist
+        self.artwork_url = artwork_url
+        self.year = year
+        self.genre = genre
+
+    def __repr__(self):
+        return '<Song %r>' % self.name
+
+class Playlist(Base):
+    __tablename__ = 'playlists'
+    id = Column(Integer, primary_key=True)
+    uid = Column(Integer)
+    name = Column(String(100))
+    parent = Column(Integer)
+    create_date = Column(DateTime)
+    path = Column(String(100))
+
+    def __init__(self, uid, name, path=None, parent=None):
+        self.uid = uid
+        self.name = name
+
+        if path is None:
+            # TODO (pat) create/clone git repo for this playlist
+            pass
+
+        self.path = path
+        self.parent = parent
+
+    def __repr__(self):
+        return '<Playlist %r %s>' % (self.name, self.path)
 
 class User(Base):
     __tablename__ = 'users'

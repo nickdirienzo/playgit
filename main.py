@@ -6,7 +6,7 @@ from functools import wraps
 app = Flask(__name__, template_folder=os.path.dirname(os.path.abspath(__file__)))
 app.secret_key = 'yoloswag'
 
-from database import db_session, User
+from database import db_session, User, Playlist, Song
 
 # User handling
 
@@ -52,6 +52,16 @@ def signup():
 @app.route('/playlists')
 @require_login
 def get_user_playlists(user):
+    pass
+
+@app.route('/create_playlist', methods=['POST'])
+@require_login
+def create_playlist(user):
+    pass
+
+@app.route('/fork_playlist/<playlist_id>')
+@require_login
+def fork_playlist(user, playlist_id):
     pass
 
 @app.route('/playlist/<playlist_id>/current')
