@@ -86,9 +86,8 @@ class Git():
     def getPlaylistId(self):
         return self.playlistId
 
-git = Git("shithappens")
-anotherGit = Git("anothershit")
-anotherGit.update(['tesasf', 'insadfsadg', 'ssdfsdhit'])
-anotherGit.commit("Added a song")
+    def log(self):
+        logs = []
+        logOutput = subprocess.check_output('git log --pretty=format:"%s"', shell=True)
 
-print git.diff("anothershit")
+        return logOutput.split('\n')

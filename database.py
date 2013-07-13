@@ -9,6 +9,8 @@ db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
 
+from git import Git
+
 Base = declarative_base()
 Base.query = db_session.query_property()
 
@@ -41,14 +43,14 @@ class Playlist(Base):
     parent = Column(Integer)
     create_date = Column(DateTime, default=datetime.datetime.now)
     path = Column(String(100))
+    git = None
 
     def __init__(self, uid, name, path=None, parent=None):
         self.uid = uid
         self.name = name
 
         if path is None:
-            # TODO (pat) create/clone git repo for this playlist
-            pass
+            git = Git(uid + '/' + name)
 
         self.path = path
         self.parent = parent
@@ -68,15 +70,13 @@ class Playlist(Base):
 
         if with_songs:
             # Load in song info
-            songs = []
-            # TODO (pat) get the song ids out of the repo
+            songs = self.git.getTrackIds()
             info['songs'] = songs
 
         return info
 
     def getLog(self):
-        # TODO (pat) get git log
-        return []
+        return git.log()
 
 class User(Base):
     __tablename__ = 'users'
