@@ -177,8 +177,13 @@ def get_playlist(user, playlist_id):
     playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
     if not playlist:
         return Response('No such playlist', 404)
+    prs = PullRequest.query.filter(PullRequest.parent_pid == playlist_id).all()
+    if prs:
+        ret = list()
+        for pr in prs:
+            ret.append(pr.toDict())
 
-    return jsonify(playlist.toDict(with_songs=True))
+    return jsonify(playlist=playlist.toDict(with_songs=True), pull_requests=ret)
 
 @app.route('/playlist/<playlist_id>/log')
 def get_playlist_log(user, playlist_id):
@@ -226,18 +231,6 @@ def pull_request(forked_playlist_id, parent_playlist_id):
     db_session.add(pr)
     db_session.commit()
     return jsonify(success=True)
-
-@app.route('/playlist/<playlist_id>/pr')
-@require_login
-def pull_requests_for_playlist(playlist_id):
-    prs = PullRequest.query.filter(PullRequest.parent_pid == playlist_id).all()
-    if prs:
-        ret = list()
-        for pr in prs:
-            ret.append(pr.toDict())
-        return jsonify(pull_requests=ret)
-    else:
-        return jsonify(pull_requests=None)
 
 # Misc
 
