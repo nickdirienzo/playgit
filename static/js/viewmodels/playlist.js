@@ -15,6 +15,11 @@ var PlaylistViewModel = function(json) {
     this.searchResults = ko.observableArray();
     this.pr = ko.observableArray(json.pull_requests || []);
 
+    this.history = ko.observableArray();
+    $.get('/playlist/' + this.id() + '/log', function(data) {
+        self.history(data.history);
+    });
+
     this.isLoading = ko.observable(true);
     $.get('/playlist/' + this.id(), function(data) {
         self.isLoading(false);

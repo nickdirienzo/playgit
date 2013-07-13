@@ -141,12 +141,12 @@ def get_user_playlists(user):
     playlists = Playlist.query.filter(Playlist.uid == user.id).all()
     return jsonify(playlists=[p.toDict() for p in playlists])
 
-@app.route('/create_playlist', methods=['POST', 'GET'])
+@app.route('/create_playlist', methods=['POST'])
 @require_login
 def create_playlist(user):
     try:
         name = request.form['name']
-        if request.form['parent']:
+        if 'parent' in request.form:
             parent = int(request.form['parent'])
         else:
             parent = None
@@ -187,12 +187,13 @@ def get_playlist(user, playlist_id):
     return jsonify(playlist=playlist.toDict(with_songs=True, with_prs=True))
 
 @app.route('/playlist/<playlist_id>/log')
+@require_login
 def get_playlist_log(user, playlist_id):
     playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
     if not playlist:
         return Response('No such playlist', 404)
 
-    return jsonify(playlist.getLog())
+    return jsonify(history=playlist.getLog())
 
 @app.route('/diff/<playlist_id1>/<rev1>/<playlist_id2>/<rev2>')
 @require_login
@@ -249,31 +250,37 @@ def commit_playlist_changes(user, playlist_id):
     playlist.git().update(song_keys)
     playlist.git().commit(msg)
     
-    success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
-    try_again = 0
-    while 'result' not in success or try_again < 3:
+    try:
         success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
-        try_again += 1 
-    if 'result' not in success and try_again >= 3:
-        return jsonify(error='failed to update rdio')
-    elif 'result' in success:
-        success = success['result']
-    print success
-    if success:
-        print 'deleted successfully...'
-        new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': playlist.description, 'tracks': ','.join(song_keys)})['result']
-        print new_playlist
-        print 'created new playlist?'
-        if new_playlist['key'] != playlist.key:
-            db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
+        try_again = 0
+        while 'result' not in success or try_again < 3:
+            print 'try again %s' % try_again
+            success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
+            try_again += 1 
+        if 'result' not in success and try_again >= 3:
+            print 'cant try again'
+            return jsonify(error='failed to update rdio')
+        elif 'result' in success:
+            success = success['result']
+        print success
+        if success:
+            print 'deleted successfully...'
+            new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': playlist.description, 'tracks': ','.join(song_keys)})['result']
+            print new_playlist
+            print 'created new playlist?'
+            if new_playlist['key'] != playlist.key:
+                db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
+                db_session.commit()
+            activity = Activity(user.id, 'modified <a href="#playlist?id=' + playlist_id + '">' + playlist.name + '</a>.')
+            db_session.add(activity)
             db_session.commit()
-    else:
-        print 'epic fail.'
+            return jsonify(success=True)
+        else:
+            print 'epic fail.'
+            return jsonify(error='failed to update rdio')
+    except:
         return jsonify(error='failed to update rdio')
-    activity = Activity(user.id, 'modified <a href="#playlist?id=' + playlist_id + '">' + playlist.name + '</a>.')
-    db_session.add(activity)
-    db_session.commit()
-    return jsonify(success=True)
+    
 
 @app.route('/search')
 @require_login

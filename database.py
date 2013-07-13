@@ -106,7 +106,7 @@ class Playlist(Base):
         return info
 
     def getLog(self):
-        return self.git.log()
+        return self.git().log()
 
 class Activity(Base):
     __tablename__ = 'activities'
