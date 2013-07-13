@@ -9,10 +9,44 @@ app.secret_key = 'yoloswag'
 RDIO_CONSUMER_KEY = 'c8pehjw6u8wdatpgxmq8jqkw'
 RDIO_CONSUMER_SECRET = '9ADNaSuKSG'
 
-from database import db_session, User, Playlist, Activity
+from database import db_session, User, Playlist, Activity, Song
 
 def AuthedRdio(at, ats):
     return Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (at, ats))
+
+def import_new_user_playlists(playlist_json, uid):
+    for playlist in playlist_json:
+        if playlist['isViewable']:
+            print 'Playlist added.'
+            p = Playlist(uid, playlist['name'], None, playlist['key'], playlist['description'])
+            db_session.add(p)
+            db_session.commit()
+            p.initGit()
+            track_ids = list()
+            for song in playlist['tracks']:
+                ts = Song.query.filter(Song.key == song['key']).first()
+                print ts
+                if ts is None:
+                    ts = Song(song['name'], song['album'], song['artist'], song['icon'], song['key'])
+                    db_session.add(ts)
+                    track_ids.append(song['key'])
+            p.git().writeTrackIds(track_ids)
+        else:
+            continue
+    db_session.commit()
+
+def transform_track_keys(track_keys):
+    tracks = list()
+    for track_key in track_keys:
+        t = Song.query.filter(Song.key == track_key).first()
+        track = dict()
+        track['name'] = t.name
+        track['album'] = t.album
+        track['artist'] = t.artist
+        track['artwork_url'] = t.artwork_url
+        track['key'] = track_key
+        tracks.append(track)
+    return jsonify(tracks)
 
 # User handling
 
@@ -39,14 +73,17 @@ def auth():
         session['ats'] = rdio.token[1]
         session['rt'] = ''
         session['rts'] = ''
-        rdio_data = rdio.call('currentUser')['result']
-        username = rdio_data['url'].replace('/', ' ').split()[-1]
+        rdio_data = rdio.call('currentUser', params={'extras': 'username,displayName'})['result']
+        username = rdio_data['username']
         print 'Creating user model.'
         user = User.query.filter(User.username == username).first()
         if user is None:
-            user = User(username=username, token=rdio_data['key'], icon=rdio_data['icon'], first_name=rdio_data['firstName'], last_name=rdio_data['lastName'])
+            user = User(username=username, key=rdio_data['key'], icon=rdio_data['icon'], name=rdio_data['displayName'])
             db_session.add(user)
             db_session.commit()
+            playlists = rdio.call('getPlaylists', params={'extras': 'tracks,description,isViewable'})['result']['owned']
+            #print playlists
+            import_new_user_playlists(playlists, user.id)
         print 'Committed.'
         session['user_id'] = user.id
         print session
@@ -63,7 +100,7 @@ def get_current_user():
     if user_id:
         user = User.query.filter(User.id == user_id).first()
         if user:
-            return jsonify(id=user.id, username=user.username, icon=user.icon, first_name=user.first_name, last_name=user.last_name, is_logged_in=True)
+            return jsonify(id=user.id, username=user.username, icon=user.icon, name=user.name, is_logged_in=True)
 
     return jsonify(is_logged_in=False)
 
@@ -71,7 +108,7 @@ def get_current_user():
 def get_user(user_id):
     user = User.query.filter(User.id == user_id).first()
     if user:
-        return jsonify(id=user.id, username=user.username, icon=user.icon, first_name=user.first_name, last_name=user.last_name, is_logged_in=True)
+        return jsonify(id=user.id, username=user.username, icon=user.icon, name=user.name)
 
     return Response('No such user', 404)
 
