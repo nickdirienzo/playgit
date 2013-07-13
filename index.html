@@ -63,7 +63,10 @@
             <div class="buttons">
                 <a class="pull-request-button" data-bind="visible: parent, click: pullRequest"><span class="icon">]</span>Pull request</a>
                 <a class="fork-button" data-bind="visible: owner, click: clickFork"><span class="icon">x</span>Fork</a>
-                <a class="commit-button" data-bind="visible: hasChanges, click: commitChanges"><span class="icon">=</span>Commit changes</a>
+                <a class="commit-button" data-bind="visible: hasChanges, click: commitChanges">
+                    <span class="icon">=</span>
+                    Commit changes
+                </a>
             </div>
             <h2>
                 <div class="owner-name" data-bind="text: username"></div>

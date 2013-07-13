@@ -249,11 +249,16 @@ def commit_playlist_changes(user, playlist_id):
     msg = added_msg + ' ' + removed_msg
     playlist.git().update(song_keys)
     playlist.git().commit(msg)
-    
+
+    activity = Activity(user.id, 'modified <a href="#playlist?id=%d">%s</a>' % (playlist.id, playlist.name))
+    db_session.add(activity)
+    db_session.commit()
+
     new_playlist = rdio.call('createPlaylist', params={'name': '%s (Old)' % playlist.name, 'description': playlist.description, 'tracks': ','.join(current_songs)})['result']
     if new_playlist['name'] == '%s (Old)' % playlist.name:
         # Confirmation of backup
         reply = rdio.call('deletePlaylist', params={'playlist': playlist.key})
+        print reply
         try:
             success = reply['result']
             if success:
@@ -264,12 +269,10 @@ def commit_playlist_changes(user, playlist_id):
                     if new_playlist['key'] != playlist.key:
                         db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
                         db_session.commit()
-                    activity = Activity(user.id, 'modified <a href="#playlist?id=' + playlist_id + '">' + playlist.name + '</a>.')
-                    db_session.add(activity)
-                    db_session.commit()
                     rdio.call('deletePlaylist', params={'playlist': backup['key']})
                     return jsonify(sync=True, commit=True)
-        except KeyValue:
+        except KeyError as e:
+            print repr(e)
             return jsonify(sync=False, commit=True)
 
 @app.route('/search')
