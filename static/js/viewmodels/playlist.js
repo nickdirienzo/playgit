@@ -56,6 +56,7 @@ var PlaylistViewModel = function(json) {
 
 	this.clickFork = function() {
 		$.get('/fork_playlist/' + json.id, function(data) {
+			console.log(data);
 			appVM.addPlaylists([data.playlist]);
 			appVM.transition('playlist-tmpl', appVM.playlists()[appVM.playlists().length-1]);
 		});
