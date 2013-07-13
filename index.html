@@ -24,14 +24,9 @@
     </header>
 
     <div class="center" data-bind="if: isLoaded">
-        <div data-bind="ifnot: userIsLoggedIn" id="welcome"> 
-            <h2>Some really inspirational text.</h2>
-            <p class="desc">Some really bullshit blurb, talking about how inspiration our app is, how this will change how we live our lives, and how we will get 15mm funding.</p>
-            <div class="form">
-                <input type="text" name="username" placeholder="Username" data-bind="value: userFormUsername">
-                <input type="password" name="password" placeholder="Password" data-bind="value: userFormPassword">
-                <button data-bind="click:clickLogin">Login</button>
-            </div>
+        <div data-bind="ifnot: userIsLoggedIn" id="welcome">
+            <h2>Version control your playlists.</h2>
+            <button data-bind="click:clickLogin">Login with Rdio</button>
         </div>
         <div data-bind="if: userIsLoggedIn">
             <div id="wrapper" data-bind="template: { name: stateTemplate, data: stateData }"></div>
@@ -70,7 +65,7 @@
                 </div>
                 <div class="widget">
                     <div class="widget-title">Pull Requests</div>
-                    
+
                 </div>
             </div>
         </div>
