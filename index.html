@@ -47,6 +47,7 @@
                 <ul class='homepage-list-playlist' data-bind="template:{ name: 'homepage-list-playlist-tmpl', foreach: playlists }"></ul>
             </div>
         </div>
+        <div class="widget-title">Latest Activity</div>
         <div class="main-content">
             <ul data-bind="foreach: latestActivity" id="activity-feed">
                 <li>
@@ -144,6 +145,11 @@
                     <span class="playlist-song-name" data-bind="text: songName"></span>
                     <span class="playlist-song-artist" data-bind="text: songArtist"></span>
                 </div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="widget">
+                <a data-bind="click: acceptPR" class="purplebutton accept-pr-button"><span class="icon">=</span>Accept this PR</a>
             </div>
         </div>
     </script>

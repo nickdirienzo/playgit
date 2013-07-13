@@ -266,7 +266,7 @@ header h1 a {
 	margin-bottom: 20px;
 }
 
-.sidebar .widget .widget-title {
+.widget-title {
 	font-size: 20px;
 	font-weight: bold;
 	text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
@@ -314,11 +314,15 @@ a.small-icon-link{
 .diff-change.added {
 	color: green;
 }
+.accept-pr-button {
+	width: 100%;
+	box-sizing: border-box;
+}
 .buttons {
     float: right;
 }
 
-.buttons a {
+.buttons a, .purplebutton {
     display: inline-block;
     border-radius: 4px;
     padding: 5px 15px 8px;
@@ -327,7 +331,7 @@ a.small-icon-link{
     font-size: 15px;
 }
 
-.buttons a span.icon {
+span.icon {
 	font-family: 'iconSweetsRegular';
 	margin-right: 5px;
 }

@@ -9,6 +9,7 @@ var PRModel = function(json) {
 	this.parent = ko.observable(appVM.findPlaylist(json.parent_pid));
 	this.parent_uid = ko.observable(json.parent_uid);
 	this.requested_on = ko.observable(json.requested_on);
+	this.accepted_on = ko.observable(json.accepted_on)
 
 	this.diff = ko.observable('');
 	this.isLoading = ko.observable(true);
@@ -25,8 +26,18 @@ var PRModel = function(json) {
 		return self.parent().username() + '/' + self.parent().name();
 	})
 
+	this.acceptPR = function() {
+		$.get('/pr/' + self.parent().id() + '/' + self.child().id() + '/accept', function() {
+			appVM.transition('pr-tmpl', self);
+		})
+	}
+
 	this.setHash = function() {
 		location.hash = "#pr?id=" + self.id();
+	}
+
+	this.isAccepted = function() {
+		return self.accepted_on != null;
 	}
 
 };
