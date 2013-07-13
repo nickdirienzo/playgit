@@ -67,8 +67,8 @@ header h1 {
 #welcome .form {
 	width: 60%;
 }
-#welcome .form input {
-	width: 45%;
+#welcome .form input, button {
+	width: 30%;
 	margin-right: 2%;
 	padding: 10px;
 	font-size: 20px;
@@ -79,14 +79,8 @@ header h1 {
 	margin-bottom: 15px;
 }
 #welcome .form button {
-	width: 30%;
 	background: -webkit-linear-gradient(top, #60047A, #54046B);
 	border: 1px solid rgba(255,255,255,0.3);
-	font-size: 16px;
-	padding: 7px;
-	border-radius: 5px;
-	font-family: "Helvetica Neue";
-	margin-right: 2%;
 	color: #fff;
 	transition: 0.2s opacity;
 	cursor: pointer;
