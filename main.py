@@ -31,6 +31,14 @@ def get_current_user():
 
     return jsonify(is_logged_in=False)
 
+@app.route('/user/<user_id>')
+def get_user(user_id):
+    user = User.query.filter(User.id == user_id).first()
+    if user:
+        return jsonify(id=user.id, username=user.username)
+
+    return Response('No such user', 404)
+
 @app.route('/login', methods=['POST'])
 def login():
     user = User.query.filter(User.username == request.form['username'],
