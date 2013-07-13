@@ -14,6 +14,20 @@ from git import Git
 Base = declarative_base()
 Base.query = db_session.query_property()
 
+def transform_track_keys(track_keys):
+    print 'TRACK KEYS', track_keys
+    tracks = list()
+    for track_key in track_keys:
+        t = Song.query.filter(Song.key == track_key).first()
+        track = dict()
+        track['name'] = t.name
+        track['album'] = t.album
+        track['artist'] = t.artist
+        track['artwork_url'] = t.artwork_url
+        track['key'] = track_key
+        tracks.append(track)
+    return tracks
+
 class Song(Base):
     __tablename__ = 'songs'
     id = Column(Integer, primary_key=True)
@@ -80,7 +94,7 @@ class Playlist(Base):
         if with_songs:
             # Load in song info
             songs = self.git().getTrackIds()
-            info['songs'] = songs
+            info['songs'] = transform_track_keys(songs)
 
         return info
 

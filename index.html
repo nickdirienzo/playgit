@@ -68,17 +68,20 @@
                     <input type="text" id="playlist-search-input" placeholder="Search Rdio for songs..." data-bind="value: searchQuery, valueUpdate: 'afterkeydown', event: { keyup: doSearch }">
                     <div id="playlist-search-results" data-bind="template: { name: 'playlist-song-search-result-tmpl', foreach: searchResults }"></div>
                 </div>
-                <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs }"></div>
+                <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs, afterAdd: fadeIn, beforeRemove: fadeOut }"></div>
             </div>
             <div class="sidebar">
                 <div class="widget">
                 </div>
                 <div class="widget">
                     <div class="widget-title">Pull Requests</div>
-
+                    <ul data-bind="template: {name: 'playlist-list-pr-tmpl', foreach: pr }"></ul>
                 </div>
             </div>
         </div>
+    </script>
+    <script type="text/html" id="playlist-list-pr-tmpl">
+       <a href="#"><li data-bind="text: name"></li></a>
     </script>
     <script type="text/html" id="playlist-song-search-result-tmpl">
         <div class="playlist-song" data-bind="click: $parent.clickSearchResult">
@@ -89,9 +92,10 @@
     </script>
     <script type="text/html" id="playlist-song-tmpl">
         <div class="playlist-song">
+            <img class="playlist-artwork" data-bind="attr: { src: artwork_url }">
             <span class="playlist-song-name" data-bind="text: name">Song name</span>
             <span class="playlist-song-artist" data-bind="text: artist">Artist name</span>
-            <a href="#" class="playlist-song-remove" data-bind="click: removeSong">(remove)</a>
+            <a class="playlist-song-remove" data-bind="click: $parent.removeSong">(remove)</a>
         </div>
     </script>
     <script type="text/javascript" src="static/js/app.js"></script>
