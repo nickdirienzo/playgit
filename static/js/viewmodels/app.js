@@ -53,7 +53,9 @@ var AppViewModel = function(json) {
 	this.addPlaylists = function(_playlists) {
 		if(_playlists) {
 			_.each(_playlists, function(playlist) {
-				self.playlists.push(new PlaylistViewModel(playlist));
+				plvm = new PlaylistViewModel(playlist);
+				self.playlists.push(plvm);
+				plvm.refresh();
 			});
 		}
 	};
@@ -102,7 +104,11 @@ var AppViewModel = function(json) {
 			}
 		}
 	};
-
+	this.afterRender = function() {
+		if(self.stateTemplate() == 'playlist-tmpl') {
+			self.stateData().refresh();
+		}
+	};
 	this.reRender = function(template, data) {
 		$('#wrapper').slideUp(300, function() {
 			self.stateTemplate('null-tmpl');
