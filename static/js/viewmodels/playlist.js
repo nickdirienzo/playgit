@@ -95,7 +95,7 @@ var PlaylistViewModel = function(json) {
             dataType: 'json',
             url: '/commit/' + self.id(),
             success: function(res) {
-                if (res.success) {
+                if (res.commit) {
                     self.hasChanges(false);
                 }
             }
