@@ -196,7 +196,33 @@ def get_playlist_diff(user, playlist_id1, rev1, playlist_id2, rev2):
 @app.route('/commit/<playlist_id>', methods=['POST'])
 @require_login
 def commit_playlist_changes(user, playlist_id):
-    pass
+    song_keys = set(request.json['song_keys'])
+    if not song_keys:
+        return jsonify(error='no keys sent')
+    playlist = Playlist.query.filter(Playlist.id == playlist_id and Playlist.uid == session.get('user_id')).first()
+    if not playlist:
+        return jsonify(error='invalid playlist')
+    current_songs = set(playlist.git().getTrackIds())
+    added = song_keys - current_songs
+    removed = current_songs - song_keys
+    if len(added) > 0:
+        added_msg = 'Added '
+        for a in added:
+            ts = Song.query.filter(Song.key == a).first()
+            added_msg += '%s by %s ' % (ts.name, ts.artist)
+    else:
+        added_msg = ''
+    if len(removed) > 0:
+        removed_msg = 'Removed '
+        for r in removed:
+            s = Song.query.filter(Song.key == r).first()
+            removed_msg += '%s by %s ' % (s.name, s.artist)
+    else:
+        removed_msg = ''
+    msg = added_msg + ' ' + removed_msg
+    playlist.git().update(song_keys)
+    playlist.git().commit(msg)
+    return jsonify(success=True)
 
 @app.route('/search')
 @require_login
