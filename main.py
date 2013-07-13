@@ -73,7 +73,14 @@ def create_playlist(user):
 @app.route('/fork_playlist/<playlist_id>')
 @require_login
 def fork_playlist(user, playlist_id):
-    pass
+    try:
+        playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
+        new_playlist = Playlist(uid=user.id, name=playlist.name, parent=playlist.id)
+        db_session.add(new_playlist)
+        db_session.commit()
+        return jsonify(success=True, playlist=new_playlist.toDict(with_songs=True))
+    except Exception as e:
+        return jsonify(success=False, error='%s' % repr(e))
 
 @app.route('/playlist/<playlist_id>')
 @require_login
@@ -86,7 +93,11 @@ def get_playlist(user, playlist_id):
 
 @app.route('/playlist/<playlist_id>/log')
 def get_playlist_log(user, playlist_id):
-    pass
+    playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
+    if not playlist:
+        return Response('No such playlist', 404)
+
+    return jsonify(playlist.getLog())
 
 @app.route('/diff/<playlist_id1>/<rev1>/<playlist_id2>/<rev2>')
 @require_login
@@ -101,7 +112,7 @@ def commit_playlist_changes(user, playlist_id):
 @app.route('/search')
 @require_login
 def search_for_song(user):
-    # TODO nick
+    # TODO (nick)
     pass
 
 # Misc

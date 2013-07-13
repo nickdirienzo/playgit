@@ -74,6 +74,10 @@ class Playlist(Base):
 
         return info
 
+    def getLog(self):
+        # TODO (pat) get git log
+        return []
+
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
