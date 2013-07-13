@@ -148,8 +148,11 @@
             </div>
         </div>
         <div class="sidebar">
-            <div class="widget">
+            <div class="widget" data-bind="visible: !isAccepted()">
                 <a data-bind="click: acceptPR" class="purplebutton accept-pr-button"><span class="icon">=</span>Accept this PR</a>
+            </div>
+            <div class="widget" data-bind="visible: isAccepted()">
+                <div class="widget-title">PR Accepted!</div>
             </div>
         </div>
     </script>

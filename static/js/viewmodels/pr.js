@@ -29,16 +29,16 @@ var PRModel = function(json) {
 	this.acceptPR = function() {
 		$.get('/pr/' + self.parent().id() + '/' + self.child().id() + '/accept', function() {
 			appVM.transition('pr-tmpl', self);
-		})
-	}
+		});
+	};
 
 	this.setHash = function() {
 		location.hash = "#pr?id=" + self.id();
-	}
+	};
 
-	this.isAccepted = function() {
-		return self.accepted_on != null;
-	}
+	this.isAccepted = ko.computed(function() {
+		return self.accepted_on() != null;
+	});
 
 };
 
