@@ -220,7 +220,7 @@ def get_remote_diff(user, playlist_id_1, playlist_id_2):
 
     changes = []
     for i, song in enumerate(songsThatChanged):
-        changes.append([howTheyChanged[i], songsThatChanged[i]['name']])
+        changes.append([howTheyChanged[i], songsThatChanged[i]['name'] + ' by ' + songsThatChanged[i]['artist']])
     return jsonify(diff=changes)
 
 @app.route('/commit/<playlist_id>', methods=['POST'])
