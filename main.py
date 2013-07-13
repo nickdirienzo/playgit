@@ -3,7 +3,6 @@ import urllib2
 from flask import Flask, jsonify, render_template, request, session, Response, redirect, url_for
 from functools import wraps
 from rdio import Rdio
-import sqlalchemy
 
 app = Flask(__name__, template_folder=os.path.dirname(os.path.abspath(__file__)))
 app.secret_key = 'yoloswag'
@@ -197,7 +196,7 @@ def commit_playlist_changes(user, playlist_id):
 @require_login
 def search_for_song(user):
     query = request.args.get('q')
-    types = ['Artist', 'Album', 'Track']
+    types = ['Track']
     rdio = AuthedRdio(session.get('at'), session.get('ats'))
     try:
         results = rdio.call('search', params={'query': query, 'types': ','.join(types)})['result']
@@ -208,7 +207,7 @@ def search_for_song(user):
 @app.route('/activity')
 def get_latest_activity():
     latest_activity = Activity.query.order_by(Activity.activity_date.desc()).limit(25).all()
-    return jsonify([a.toDict() for a in latest_activity])
+    return jsonify(activity=[a.toDict() for a in latest_activity])
 
 # Misc
 
