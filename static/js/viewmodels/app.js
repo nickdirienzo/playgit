@@ -40,13 +40,6 @@ var AppViewModel = function(json) {
 		});
 	};
 
-	this.clickLogin = function() {
-		$.post('/login', {
-			username: self.userFormUsername(),
-			password: self.userFormPassword()
-		});
-	};
-
 	this.transition = function(template, data) {
 		if(template == self.stateTemplate()) return;
 
@@ -61,4 +54,12 @@ var AppViewModel = function(json) {
 		});
 		$("#wrapper").slideDown(300);
 	}
+	this.clickLogin = function() {
+		$.get('/login', function(data) {
+            var url = data['login_url'];
+            if (url) {
+                window.location = url;
+            }
+        });
+	};
 };

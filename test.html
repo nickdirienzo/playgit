@@ -1,0 +1,16 @@
+<style>
+iframe { border: 1px solid #555; display: block; width: 85%; height: 200px; }
+</style>
+
+<form method="POST" action="/create_playlist">
+    <h1>Create playlist</h1>
+    <input type="text" name="name" placeholder"Playlist name">
+    <input type="number" name="parent" placeholder="Parent">
+    <input type="submit" value="Create">
+</form>
+
+<h1>/playlists</h1>
+<iframe src="/playlists"></iframe>
+
+<br>
+<a href="/logout">Logout</a>

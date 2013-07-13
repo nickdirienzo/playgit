@@ -1,12 +1,15 @@
 import os
-import sqlalchemy
-from flask import Flask, jsonify, render_template, request, session, Response
+import urllib2
+from flask import Flask, jsonify, render_template, request, session, Response, redirect, url_for
 from functools import wraps
+from rdio import Rdio
 
 app = Flask(__name__, template_folder=os.path.dirname(os.path.abspath(__file__)))
 app.secret_key = 'yoloswag'
+RDIO_CONSUMER_KEY = 'c8pehjw6u8wdatpgxmq8jqkw'
+RDIO_CONSUMER_SECRET = '9ADNaSuKSG'
 
-from database import db_session, User, Playlist, Song
+from database import db_session, User, Playlist, Activity
 
 # User handling
 
@@ -21,6 +24,27 @@ def require_login(original_fn):
         return Response('Not allowed', 401)
     return new_fn
 
+@app.route('/auth', methods=['GET', 'POST'])
+def auth():
+    request_token = request.cookies.get('rt')
+    request_token_secret = request.cookies.get('rts')
+    verifier = request.args.get('oauth_verifier', '')
+    if request_token and request_token_secret and verifier:
+        rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (request_token, request_token_secret))
+        rdio.complete_authentication(verifier)
+        session['at'] = rdio.token[0]
+        session['ats'] = rdio.token[1]
+        session['rt'] = ''
+        session['rts'] = ''
+        current_user = rdio.call('currentUser')['result']
+        print current_user
+        #session['user_id'] = 1 # Hold until I know what this json is
+        return redirect(url_for('main'))
+    else:
+        # Login failed, clear everything
+        logout()
+        return redirect(url_for('main'))
+
 @app.route('/user')
 def get_current_user():
     user_id = session.get('user_id')
@@ -31,31 +55,47 @@ def get_current_user():
 
     return jsonify(is_logged_in=False)
 
-@app.route('/login', methods=['POST'])
-def login():
-    user = User.query.filter(User.username == request.form['username'],
-                             User.password == request.form['password']).first()
-    if (user):
-        session['user_id'] = user.id
-        return jsonify(success=True)
-    else:
-        return jsonify(success=False)
+@app.route('/user/<user_id>')
+def get_user(user_id):
+    user = User.query.filter(User.id == user_id).first()
+    if user:
+        return jsonify(id=user.id, username=user.username)
+
+    return Response('No such user', 404)
 
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
+    session.pop('at', None)
+    session.pop('ats', None)
+    session.pop('rt', None)
+    session.pop('rts', None)
     return jsonify(success=True)
 
-@app.route('/signup', methods=['POST'])
-def signup():
-    try:
-        new_user = User(request.form['username'], request.form['password'])
-        db_session.add(new_user)
-        db_session.commit()
-        session['user_id'] = new_user.id
-        return jsonify(success=True)
-    except sqlalchemy.exc.IntegrityError as e:
-        return jsonify(success=False, error=repr(e))
+@app.route('/login')
+def login():
+    access_token = session.get('at')
+    access_token_secret = session.get('ats')
+    if access_token and access_token_secret:
+        rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (access_token, access_token_secret))
+        try:
+            current_user = rdio.call('currentUser')['result']
+            print current_user
+            return jsonify(current_user=current_user)
+        except urllib2.HTTPError:
+            # Something went horribly wrong, like Rdio told us our app sucks.
+            logout()
+            return redirect(url_for('main'))
+    else:
+        session['at'] = ''
+        session['ats'] = ''
+        session['rt'] = ''
+        session['rts'] = ''
+        rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET))
+        login_url = rdio.begin_authentication(callback_url='http://' + request.host + '/auth')
+        session['rt'] = rdio.token[0]
+        session['rts'] = rdio.token[1]
+        return jsonify(login_url=login_url)
 
 # API endpoints
 
@@ -77,23 +117,39 @@ def create_playlist(user):
         playlist = Playlist(uid=user.id, name=name, parent=parent)
         db_session.add(playlist)
         db_session.commit()
-        return jsonify(success=True)
+        playlist.initGit(playlist.id) # xxx might not work
+        return jsonify(success=True, playlist=playlist.toDict())
     except Exception as e:
         return jsonify(success=False, error='%s' % repr(e))
 
 @app.route('/fork_playlist/<playlist_id>')
 @require_login
 def fork_playlist(user, playlist_id):
-    pass
+    try:
+        playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
+        new_playlist = Playlist(uid=user.id, name=playlist.name, parent=playlist.id)
+        db_session.add(new_playlist)
+        db_session.commit()
+        return jsonify(success=True, playlist=new_playlist.toDict(with_songs=True))
+    except Exception as e:
+        return jsonify(success=False, error='%s' % repr(e))
 
-@app.route('/playlist/<playlist_id>/current')
+@app.route('/playlist/<playlist_id>')
 @require_login
 def get_playlist(user, playlist_id):
-    pass
+    playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
+    if not playlist:
+        return Response('No such playlist', 404)
+
+    return jsonify(playlist.toDict(with_songs=True))
 
 @app.route('/playlist/<playlist_id>/log')
 def get_playlist_log(user, playlist_id):
-    pass
+    playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
+    if not playlist:
+        return Response('No such playlist', 404)
+
+    return jsonify(playlist.getLog())
 
 @app.route('/diff/<playlist_id1>/<rev1>/<playlist_id2>/<rev2>')
 @require_login
@@ -108,14 +164,19 @@ def commit_playlist_changes(user, playlist_id):
 @app.route('/search')
 @require_login
 def search_for_song(user):
-    # TODO nick
+    # TODO (nick)
     pass
+
+@app.route('/activity')
+def get_latest_activity():
+    latest_activity = Activity.query.order_by(Activity.activity_date.desc()).limit(25).all()
+    return jsonify([a.toDict() for a in latest_activity])
 
 # Misc
 
 @app.route('/test')
-def testingPage(user):
-    return render_template('user.html', user=user)
+def testingPage():
+    return render_template('test.html')
 
 @app.route('/')
 def main():

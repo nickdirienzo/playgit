@@ -9,6 +9,8 @@ db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
 
+from git import Git
+
 Base = declarative_base()
 Base.query = db_session.query_property()
 
@@ -40,24 +42,25 @@ class Playlist(Base):
     name = Column(String(100))
     parent = Column(Integer)
     create_date = Column(DateTime, default=datetime.datetime.now)
-    path = Column(String(100))
+    git = None
 
-    def __init__(self, uid, name, path=None, parent=None):
+    def __init__(self, uid, name, parent=None):
         self.uid = uid
         self.name = name
-
-        if path is None:
-            # TODO (pat) create/clone git repo for this playlist
-            pass
-
-        self.path = path
         self.parent = parent
 
     def __repr__(self):
-        return '<Playlist %r %s>' % (self.name, self.path)
+        return '<Playlist %r %r>' % (self.name, self.path)
 
-    def toDict(self):
-        return {
+    def initGit(self, id):
+        if self.parent:
+            parentGit = Git(self.parent)
+            git = parentGit.fork(id)
+        else:
+            git = Git(id)
+
+    def toDict(self, with_songs=False):
+        info = {
             'id': self.id,
             'uid': self.uid,
             'name': self.name,
@@ -66,18 +69,64 @@ class Playlist(Base):
             'path': self.path
         }
 
+        if with_songs:
+            # Load in song info
+            songs = self.git.getTrackIds()
+            info['songs'] = songs
+
+        return info
+
+    def getLog(self):
+        return git.log()
+
+class Activity(Base):
+    __tablename__ = 'activities'
+    id = Column(Integer, primary_key=True)
+    uid = Column(Integer)
+    activity_date = Column(DateTime, default=datetime.datetime.now)
+    description = Column(String(255))
+
+    def __init__(self, uid, description):
+        self.uid = uid
+        self.description = description
+
+    def __repr__(self):
+        return '<Activity %r>' % self.id
+
+    def toDict(self):
+        return {
+            'id': self.id,
+            'user': User.query.filter(User.id == self.uid).first().toDict(),
+            'activity_date': self.activity_date,
+            'description': self.description,
+        }
+
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     username = Column(String(100), unique=True)
-    password = Column(String(100))
+    token = Column(String(100))
+    icon = Column(String(100))
+    first_name = Column(String(100))
+    last_name = Column(String(100))
 
-    def __init__(self, username, password):
+    def __init__(self, username, token, icon, first_name, last_name):
         self.username = username
-        self.password = password
+        self.token = token
+        self.icon = icon
+        self.first_name = first_name
+        self.last_name = last_name
+
+    def toDict(self):
+        return {
+            'username': self.username,
+            'icon': self.icon,
+            'first_name': self.first_name,
+            'last_name': self.last_name
+        }
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return self.toDict()
 
 def init_db():
     Base.metadata.create_all(bind=engine)
