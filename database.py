@@ -78,11 +78,14 @@ class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     username = Column(String(100), unique=True)
-    password = Column(String(100))
+    token = Column(String(100))
 
-    def __init__(self, username, password):
+    def __init__(self, username, token):
         self.username = username
-        self.password = password
+        self.token = token
+
+    def toDict(self):
+        return {'username': self.username}
 
     def __repr__(self):
         return '<User %r>' % self.username
