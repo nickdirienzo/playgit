@@ -9,26 +9,29 @@ var PlaylistViewModel = function(json) {
     this.searchQuery = ko.observable("");
     this.searchTimeout = null;
     this.searchResults = ko.observableArray();
-    this.pr = ko.observableArray(json.pr || []);
+    this.pr = ko.observableArray(json.pull_requests || []);
 
+    self.isLoading = ko.observable(true);
     $.get('/playlist/' + this.id(), function(data) {
-        self.songs(data.songs);
+        self.isLoading(false);
+        self.songs(data.playlist.songs);
     });
 
 	this.songsCount = ko.computed(function() {
-		return this.songs().length;
+		return self.songs().length;
 	}, this);
 
 	this.clickPlaylist = function() {
 		appVM.transition('playlist-tmpl', self);
 	};
 	this.clickSearchResult = function(result) {
-		self.songs.push(new SongViewModel({
+		self.songs.unshift({
 			key: result.key,
 			name: result.name,
 			artist: result.artist,
-			album: result.album
-		}));
+			album: result.album,
+            artwork_url: result.icon
+		});
 
 		$("#playlist-search-results").slideUp(300, function() {
 			self.searchResults.removeAll();

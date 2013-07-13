@@ -177,13 +177,8 @@ def get_playlist(user, playlist_id):
     playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
     if not playlist:
         return Response('No such playlist', 404)
-    prs = PullRequest.query.filter(PullRequest.parent_pid == playlist_id).all()
-    if prs:
-        ret = list()
-        for pr in prs:
-            ret.append(pr.toDict())
 
-    return jsonify(playlist=playlist.toDict(with_songs=True), pull_requests=ret)
+    return jsonify(playlist=playlist.toDict(with_songs=True, with_prs=True))
 
 @app.route('/playlist/<playlist_id>/log')
 def get_playlist_log(user, playlist_id):

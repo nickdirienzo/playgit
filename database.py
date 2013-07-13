@@ -80,7 +80,7 @@ class Playlist(Base):
             self._git = Git(self.id)
         return self._git
 
-    def toDict(self, with_songs=False):
+    def toDict(self, with_songs=False, with_prs=False):
         info = {
             'id': self.id,
             'uid': self.uid,
@@ -95,6 +95,14 @@ class Playlist(Base):
             # Load in song info
             songs = self.git().getTrackIds()
             info['songs'] = transform_track_keys(songs)
+
+        if with_prs:
+            prs = PullRequest.query.filter(PullRequest.parent_pid == self.id).all()
+            ret = list()
+            if prs:
+                for pr in prs:
+                    ret.append(pr.toDict())
+            info['pull_requests'] = ret
 
         return info
 
