@@ -6,7 +6,7 @@ var PlaylistViewModel = function(json) {
 	this.parent = ko.observable(json.parent);
 	this.songs = ko.observableArray();
 
-	this.owner = ko.observable(json.uid != appVM.user.id);
+	this.owner = ko.observable(json.uid != appVM.user.id); // TODO flip this
     this.username = ko.observable('');
     this.hasChanges = ko.observable(false);
 
@@ -15,7 +15,7 @@ var PlaylistViewModel = function(json) {
     this.searchResults = ko.observableArray();
     this.pr = ko.observableArray(json.pull_requests || []);
 
-    self.isLoading = ko.observable(true);
+    this.isLoading = ko.observable(true);
     $.get('/playlist/' + this.id(), function(data) {
         self.isLoading(false);
         self.songs(data.playlist.songs);
@@ -82,6 +82,7 @@ var PlaylistViewModel = function(json) {
 	};
 
     this.commitChanges = function() {
+    	alert(self.id());
         $.ajax({
             type: 'POST',
             contentType: 'application/json',

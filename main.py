@@ -26,15 +26,14 @@ def import_new_user_playlists(playlist_json, uid):
             track_ids = list()
             for song in playlist['tracks']:
                 ts = Song.query.filter(Song.key == song['key']).first()
-                print ts
-                if ts is None:
+                if not ts:
                     ts = Song(song['name'], song['album'], song['artist'], song['icon'], song['key'])
                     db_session.add(ts)
+                    db_session.commit()
                     track_ids.append(song['key'])
             p.git().writeTrackKeys(track_ids)
         else:
             continue
-    db_session.commit()
 
 # User handling
 
@@ -155,6 +154,9 @@ def create_playlist(user):
         db_session.add(playlist)
         db_session.commit()
         playlist.initGit(playlist.id) # xxx might not work
+        fork_activity = Activity(user.id, " created playlist <a href='#playlist?id=" + playlist.id + "'>" + name + "</a>")
+        db_session.add(fork_activity)
+        db_session.commit()
         return jsonify(success=True, playlist=playlist.toDict())
     except Exception as e:
         return jsonify(success=False, error='%s' % repr(e))
@@ -167,8 +169,10 @@ def fork_playlist(user, playlist_id):
         new_playlist = Playlist(uid=user.id, name=playlist.name, parent=playlist.id)
         db_session.add(new_playlist)
         db_session.commit()
-        print "HERE"
         new_playlist.initGit()
+        fork_activity = Activity(user.id, " forked playlist <a href='#playlist?id=" + new_playlist.id + "'>" + playlist.name + "</a>")
+        db_session.add(fork_activity)
+        db_session.commit()
         return jsonify(success=True, playlist=new_playlist.toDict(with_songs=True))
     except Exception as e:
         return jsonify(success=False, error='%s' % repr(e))
@@ -219,6 +223,7 @@ def commit_playlist_changes(user, playlist_id):
         return jsonify(error='no keys sent')
 
     playlist = Playlist.query.filter(Playlist.id == playlist_id and Playlist.uid == session.get('user_id')).first()
+    print playlist
     if not playlist:
         return jsonify(error='invalid playlist')
     current_songs = set(playlist.git().getTrackIds())
@@ -244,7 +249,15 @@ def commit_playlist_changes(user, playlist_id):
     playlist.git().update(song_keys)
     playlist.git().commit(msg)
     
-    success = rdio.call('deletePlaylist', params={'playlist': playlist.key})['result']
+    success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
+    try_again = 0
+    while 'result' not in success or try_again < 3:
+        success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
+        try_again += 1 
+    if 'result' not in success and try_again >= 3:
+        return jsonify(error='failed to update rdio')
+    elif 'result' in success:
+        success = success['result']
     print success
     if success:
         print 'deleted successfully...'
@@ -257,6 +270,9 @@ def commit_playlist_changes(user, playlist_id):
     else:
         print 'epic fail.'
         return jsonify(error='failed to update rdio')
+    activity = Activity(user.id, 'modified <a href="#playlist?id=' + playlist_id + '">' + playlist.name + '</a>.')
+    db_session.add(activity)
+    db_session.commit()
     return jsonify(success=True)
 
 @app.route('/search')
