@@ -54,12 +54,12 @@ class Playlist(Base):
     def __repr__(self):
         return '<Playlist %r %r>' % (self.name, self.path)
 
-    def initGit(self, id):
+    def initGit(self):
         if self.parent:
             parentGit = Git(self.parent)
-            self._git = parentGit.fork(id)
+            self._git = parentGit.fork(self.id)
         else:
-            self._git = Git(id)
+            self._git = Git(self.id)
 
     def git(self):
         if self._git is None:

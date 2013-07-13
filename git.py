@@ -16,6 +16,12 @@ class Git():
     def filePath(self):
         return os.path.join(self._root, self._dirName, str(self._playlistId), self._fileName)
 
+    def writeTrackIds(self, track_ids):
+        with open(self.filePath(), 'w') as f:
+            for track_id in track_ids:
+                f.write(track_id)
+                f.write('\n')
+
     def getTrackIds(self):
         tracks = []
         with open(self.filePath(), 'r') as f:

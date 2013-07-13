@@ -20,12 +20,17 @@ def import_new_user_playlists(playlist_json, uid):
             print 'Playlist added.'
             p = Playlist(uid, playlist['name'], None, playlist['key'], playlist['description'])
             db_session.add(p)
+            db_session.commit()
+            p.initGit()
+            track_ids = list()
             for song in playlist['tracks']:
                 ts = Song.query.filter(Song.key == song['key']).first()
                 print ts
                 if ts is None:
                     ts = Song(song['name'], song['album'], song['artist'], song['icon'], song['key'])
                     db_session.add(ts)
+                    track_ids.append(song['key'])
+            p.git().writeTrackIds(track_ids)
         else:
             continue
     db_session.commit()
