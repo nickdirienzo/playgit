@@ -74,7 +74,7 @@ class Git():
         os.chdir(self._playlistDir)
         newDir = os.path.join(self._root, self._dirName, remote)
         subprocess.call('git fetch ' + newDir + ' master:' + remote + '/master', shell=True)
-        diffOutput = subprocess.check_output('git diff master..' + remote + '/master', shell=True)
+        diffOutput = subprocess.check_output('git diff ' + remote + '/master..master', shell=True)
 
         gotToDiffLines = False
         changes = []
