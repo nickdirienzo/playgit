@@ -28,7 +28,7 @@ var PRModel = function(json) {
 
 	this.acceptPR = function() {
 		$.get('/pr/' + self.parent().id() + '/' + self.child().id() + '/accept', function() {
-			appVM.transition('pr-tmpl', self);
+			appVM.transition('playlist-tmpl', self.parent());
 		});
 	};
 
