@@ -1,12 +1,11 @@
 import os
-import sqlalchemy
 from flask import Flask, jsonify, render_template, request, session, Response
 from functools import wraps
 
 app = Flask(__name__, template_folder=os.path.dirname(os.path.abspath(__file__)))
 app.secret_key = 'yoloswag'
 
-from database import db_session, User, Playlist, Song
+from database import db_session, User, Playlist, Song, Activity
 
 # User handling
 
@@ -122,6 +121,11 @@ def commit_playlist_changes(user, playlist_id):
 def search_for_song(user):
     # TODO (nick)
     pass
+
+@app.route('/activity')
+def get_latest_activity():
+    latest_activity = Activity.query.order_by(Activity.activity_date.desc()).limit(25).all()
+    return jsonify([a.toDict() for a in latest_activity])
 
 # Misc
 

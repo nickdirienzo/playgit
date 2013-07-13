@@ -54,7 +54,7 @@ class Playlist(Base):
         self.parent = parent
 
     def __repr__(self):
-        return '<Playlist %r %s>' % (self.name, self.path)
+        return '<Playlist %r %r>' % (self.name, self.path)
 
     def toDict(self, with_songs=False):
         info = {
@@ -77,6 +77,28 @@ class Playlist(Base):
     def getLog(self):
         # TODO (pat) get git log
         return []
+
+class Activity(Base):
+    __tablename__ = 'activities'
+    id = Column(Integer, primary_key=True)
+    uid = Column(Integer)
+    activity_date = Column(DateTime, default=datetime.datetime.now)
+    description = Column(String(255))
+
+    def __init__(self, uid, description):
+        self.uid = uid
+        self.description = description
+
+    def __repr__(self):
+        return '<Activity %r>' % self.id
+
+    def toDict(self):
+        return {
+            'id': self.id,
+            'user': User.query.filter(User.id == self.uid).first().toDict(),
+            'activity_date': self.activity_date,
+            'description': self.description,
+        }
 
 class User(Base):
     __tablename__ = 'users'
