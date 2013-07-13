@@ -62,16 +62,8 @@ header h1 a {
 #user .user-label {
 	line-height: 60px;
 }
-
-#user #user-login, #user #user-register {
-	display: none;
-}
-
-#user input {
-	padding: 7px;
-	border-radius: 3px;
-	font-family: "Helvetica Neue";
-	border: 1px solid rgba(0,0,0,0.7);
+#user .signout-link {
+	font-size: 12px;
 }
 
 #welcome {
@@ -130,7 +122,7 @@ header h1 a {
 	margin: 0;
 }
 .playlist-card {
-	width: 80%;
+	width: 90%;
 	height: 100px;
 	position: relative;
 	background: #ccc;
@@ -140,7 +132,6 @@ header h1 a {
 	cursor: pointer;
 	transition: 0.2s opacity;
 	margin-bottom: 10px;
-	overflow: hidden;
 }
 .playlist-card:hover {
 	opacity: 0.7;
@@ -151,9 +142,6 @@ header h1 a {
 }
 .playlist-card .playlist-card-background img {
 	width: 25%;
-}
-.playlist-card .playlist-card-background {
-	overflow: auto;
 }
 .playlist-card .playlist-card-gradient-overlay {
 	background-image: -webkit-linear-gradient(top, rgba(0,0,0,0) 25%, rgba(0,0,0,0.7) 100%);

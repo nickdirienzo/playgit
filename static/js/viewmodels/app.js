@@ -34,6 +34,11 @@ var AppViewModel = function(json) {
 	this.clickLogo = function() {
 		self.transition('homepage-tmpl', self);
 	};
+	this.signOut = function() {
+		$.get('/logout', function() {
+			location.reload();
+		});
+	}
 	this.newPlaylist = function() {
 		var playlistName = window.prompt('New playlist name?');
 		console.log(playlistName);
