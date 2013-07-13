@@ -61,7 +61,8 @@
         <div class="playlist">
             <h2>
                 <span data-bind="text: name"></span>
-                <span class="playlist-songsCount"><span data-bind="text: songsCount"></span> songs</span>
+                <span class="playlist-loading" data-bind="visible: isLoading">Loading...</span>
+                <span class="playlist-songsCount" data-bind="visible: !isLoading"><span data-bind="text: songsCount"></span> songs</span>
             </h2>
             <div class="main-content">
                 <div id="playlist-search">
