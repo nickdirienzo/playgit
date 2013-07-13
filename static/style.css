@@ -319,12 +319,41 @@ a.small-icon-link{
     margin-bottom: 2px;
 }
 
-.widget .history {
+.widget-title {
+    padding: 5px;
+}
+
+.widget .history, .widget .pull-requests {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 .widget .history li {
-    padding: 5px 0;
+    padding: 5px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.widget .pull-requests li {
+    padding: 4px 5px 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+    cursor: pointer;
+}
+
+.widget .pull-requests li:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.widget .pull-requests li img {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+
+.widget .pull-requests li .date {
+    display: block;
+    font-size: 10pt;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-top: 4px;
 }
