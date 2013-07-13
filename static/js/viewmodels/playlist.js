@@ -1,9 +1,13 @@
 var PlaylistViewModel = function(json) {
 	var self = this;
 
+	console.log('hererererererere');
+	console.log(json);
+
 	this.id = ko.observable(json.id);
 	this.name = ko.observable(json.name);
 	this.parent = ko.observable(json.parent);
+	this.url = ko.observable('http://www.rdio.com' + json.url);
 	this.songs = ko.observableArray();
 
 	this.owner = ko.observable(json.uid != appVM.user.id); // TODO flip this

@@ -23,6 +23,7 @@ a {
 	color: rgb(170, 148, 255);
 	opacity: 1;
 	transition: 0.2s opacity;
+	text-decoration: none;
 }
 a:hover {
 	opacity: 0.7;

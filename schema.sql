@@ -14,6 +14,7 @@ CREATE SEQUENCE playlist_id_seq;
 CREATE TABLE playlists (
   id INTEGER PRIMARY KEY DEFAULT nextval('playlist_id_seq'),
   uid INTEGER NOT NULL REFERENCES users (id),
+  url VARCHAR(100),
   name VARCHAR(100),
   parent INTEGER REFERENCES playlists (id),
   create_date TIMESTAMP DEFAULT now(),

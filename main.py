@@ -19,7 +19,7 @@ def import_new_user_playlists(playlist_json, uid):
     for playlist in playlist_json:
         if playlist['isViewable']:
             print 'Playlist added.'
-            p = Playlist(uid, playlist['name'], None, playlist['key'], playlist['description'])
+            p = Playlist(uid, playlist['name'], None, playlist['key'], playlist['description'], playlist['url'])
             db_session.add(p)
             db_session.commit()
             p.initGit()
@@ -171,6 +171,7 @@ def create_playlist(user):
 def fork_playlist(user, playlist_id):
     try:
         playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
+        print playlist
         new_playlist = Playlist(uid=user.id, name=playlist.name, parent=playlist.id, key=playlist.key, description=playlist.description)
         db_session.add(new_playlist)
         db_session.commit()
@@ -288,7 +289,7 @@ def commit_playlist_changes(user, playlist_id):
         if new_playlist['name'] == playlist.name:
             print 'created new playlist'
             if new_playlist['key'] != playlist.key:
-                db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
+                db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key'], 'url': new_playlist['url']})
                 db_session.commit()
             return jsonify(sync=True, commit=True)
     except KeyError as e:

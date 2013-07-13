@@ -50,6 +50,7 @@ class Playlist(Base):
     __tablename__ = 'playlists'
     id = Column(Integer, primary_key=True)
     uid = Column(Integer)
+    url = Column(String(100))
     name = Column(String(100))
     parent = Column(Integer)
     create_date = Column(DateTime, default=datetime.datetime.now)
@@ -57,12 +58,13 @@ class Playlist(Base):
     key = Column(String(100))
     description = Column(String(100))
 
-    def __init__(self, uid, name, parent=None, key=None, description=None):
+    def __init__(self, uid, name, parent=None, key=None, description=None, url=None):
         self.uid = uid
         self.name = name
         self.parent = parent
         self.key = key
         self.description = description
+        self.url = url
 
     def __repr__(self):
         return '<Playlist %r>' % (self.name)
@@ -82,6 +84,7 @@ class Playlist(Base):
     def toDict(self, with_songs=False, with_prs=False):
         info = {
             'id': self.id,
+            'url': self.url,
             'uid': self.uid,
             'name': self.name,
             'parent': self.parent,
