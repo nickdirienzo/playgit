@@ -1,6 +1,8 @@
-var AppViewModel = {
-	songs: ko.observableArray([
-		{ name: "Never Gonna Give You Up", artist: "Rick Astley", album: "Platnium Hits" },
-		{ name: "Get Lucky", artist: "Daft Punk", album: "Random Access Memoeries" }
-	])
-}
+var AppViewModel = function(json) {
+	var self = this;
+
+	this.playlists = ko.observableArray();
+	_.each(json.playlists, function(playlist) {
+		self.playlists.push(new PlaylistViewModel(playlist));
+	});
+};

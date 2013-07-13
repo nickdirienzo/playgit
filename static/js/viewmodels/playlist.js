@@ -1,13 +1,11 @@
-var PlaylistViewModel = {
-	id: ko.observable("123ABC"),
-	uid: ko.observable(1),
-	name: ko.observable("Test Playlist"),
-	parent: ko.observable("123AB"),
-	songs: ko.observableArray([
-		{ name: "Never Gonna Give You Up", artist: "Rick Astley", album: "Platnium Hits" },
-		{ name: "Get Lucky", artist: "Daft Punk", album: "Random Access Memoeries" }
-	]),
-	songsCount: function() {
-		return self.songs.length
-	}
-}
+var PlaylistViewModel = function(json) {
+	this.id = ko.observable(json.id);
+	this.name = ko.observable(json.name);
+	this.parent = ko.observable(json.parent);
+	this.songs = ko.observableArray(json.songs);
+
+	this.songsCount = ko.computed(function() {
+		return this.songs().length;
+	}, this);
+};
+

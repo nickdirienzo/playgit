@@ -1,4 +1,13 @@
-playlistVM = _.extend(PlaylistViewModel, {
-});
+playlist = {
+	name: "Test Playlist",
+	songs: [
+		{ name: "Never Gonna Give You Up", artist: "Rick Astley", album: "Platnium Hits" },
+		{ name: "Get Lucky", artist: "Daft Punk", album: "Random Access Memoeries" }
+	]
+};
 
-ko.applyBindings(playlistVM);
+appVM = new AppViewModel({
+	playlists: [ playlist ]
+})
+
+ko.applyBindings(appVM);

@@ -6,16 +6,16 @@
     <script type="text/javascript" src="static/js/lib/knockout-2.3.0.js"></script>
 
 
+    <script type="text/javascript" src="static/js/viewmodels/app.js"></script>
     <script type="text/javascript" src="static/js/viewmodels/playlist.js"></script>
     <title>Playgit</title>
 </head>
 <body>
-    <b data-bind="text: name">Hi?</b>
-    <b data-bind="text: songs[0]">Hi?</b>
-    <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs }"></div>
-
+    <div data-bind="template: {name: 'playlist-tmpl', foreach: playlists}"></div>
     <script type="text/html" id="playlist-tmpl">
-
+        <b data-bind="text: name">Hi?</b>
+        <span data-bind="text: songsCount">Hi</span>
+        <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs }"></div>
     </script>
     <script type="text/html" id="playlist-song-tmpl">
         <div class="playlist-song">
