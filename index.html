@@ -69,9 +69,9 @@
     <script type="text/html" id="playlist-tmpl">
         <div class="playlist">
             <div class="buttons">
+                <a class="play-button" data-bind="attr: {href: url}" target="_blank"><span class="icon">B</span>Play</a>
                 <a class="pull-request-button" data-bind="visible: parent, click: pullRequest"><span class="icon">]</span>Pull request</a>
                 <a class="fork-button" data-bind="visible: owner, click: clickFork"><span class="icon">x</span>Fork</a>
-                <a class="play-button" data-bind="attr: {href: url}"><span class="icon">x</span>Play</a>
                 <a class="commit-button" data-bind="visible: hasChanges, click: commitChanges">
                     <span class="icon">=</span>
                     <span data-bind="text: commitLabel"></span>
