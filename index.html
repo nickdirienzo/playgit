@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="static/js/lib/underscore-1.5.1.js"></script>
+    <script type="text/javascript" src="static/js/lib/knockout-2.3.0.js"></script>
+
+
+    <script type="text/javascript" src="static/js/viewmodels/app.js"></script>
+    <script type="text/javascript" src="static/js/viewmodels/playlist.js"></script>
+    <title>Playgit</title>
+</head>
+<body>
+    <div data-bind="template: {name: 'playlist-tmpl', foreach: playlists}"></div>
+    <script type="text/html" id="playlist-tmpl">
+        <b data-bind="text: name">Hi?</b>
+        <span data-bind="text: songsCount">Hi</span>
+        <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs }"></div>
+    </script>
+    <script type="text/html" id="playlist-song-tmpl">
+        <div class="playlist-song">
+            <b data-bind="text: name">Song name</b>
+            <span data-bind="text: artist">Artist name</span>
+        </div>
+    </script>
+    <script type="text/javascript" src="static/js/app.js"></script>
+</body>
+</html>
