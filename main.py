@@ -167,6 +167,8 @@ def fork_playlist(user, playlist_id):
         new_playlist = Playlist(uid=user.id, name=playlist.name, parent=playlist.id)
         db_session.add(new_playlist)
         db_session.commit()
+        print "HERE"
+        new_playlist.initGit()
         return jsonify(success=True, playlist=new_playlist.toDict(with_songs=True))
     except Exception as e:
         return jsonify(success=False, error='%s' % repr(e))
@@ -233,14 +235,14 @@ def commit_playlist_changes(user, playlist_id):
     playlist.git().update(song_keys)
     playlist.git().commit(msg)
     
-    success = rdio.call('deletePlaylist', params={'playlist': playlist['key']})['result']
+    success = rdio.call('deletePlaylist', params={'playlist': playlist.key})['result']
     print success
     if success:
         print 'deleted successfully...'
-        new_playlist = rdio.call('createPlaylist', params={'name': playlist['name'], 'description': playlist['description'], 'tracks': ','.join(song_keys)})['result']
+        new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': playlist.description, 'tracks': ','.join(song_keys)})['result']
         print new_playlist
         print 'created new playlist?'
-        if new_playlist['key'] != playlist['key']:
+        if new_playlist['key'] != playlist.key:
             db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
             db_session.commit()
     else:
