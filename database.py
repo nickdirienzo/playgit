@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -37,7 +39,7 @@ class Playlist(Base):
     uid = Column(Integer)
     name = Column(String(100))
     parent = Column(Integer)
-    create_date = Column(DateTime)
+    create_date = Column(DateTime, default=datetime.datetime.now)
     path = Column(String(100))
 
     def __init__(self, uid, name, path=None, parent=None):
@@ -53,6 +55,16 @@ class Playlist(Base):
 
     def __repr__(self):
         return '<Playlist %r %s>' % (self.name, self.path)
+
+    def toDict(self):
+        return {
+            'id': self.id,
+            'uid': self.uid,
+            'name': self.name,
+            'parent': self.parent,
+            'create_date': self.create_date,
+            'path': self.path
+        }
 
 class User(Base):
     __tablename__ = 'users'

@@ -21,6 +21,16 @@ def require_login(original_fn):
         return Response('Not allowed', 401)
     return new_fn
 
+@app.route('/user')
+def get_current_user():
+    user_id = session.get('user_id')
+    if user_id:
+        user = User.query.filter(User.id == user_id).first()
+        if user:
+            return jsonify(id=user.id, username=user.username, is_logged_in=True)
+
+    return jsonify(is_logged_in=False)
+
 @app.route('/login', methods=['POST'])
 def login():
     user = User.query.filter(User.username == request.form['username'],
@@ -52,12 +62,24 @@ def signup():
 @app.route('/playlists')
 @require_login
 def get_user_playlists(user):
-    pass
+    playlists = Playlist.query.filter(Playlist.uid == user.id).all()
+    return jsonify(playlists=[p.toDict() for p in playlists])
 
-@app.route('/create_playlist', methods=['POST'])
+@app.route('/create_playlist', methods=['POST', 'GET'])
 @require_login
 def create_playlist(user):
-    pass
+    try:
+        name = request.form['name']
+        if request.form['parent']:
+            parent = int(request.form['parent'])
+        else:
+            parent = None
+        playlist = Playlist(uid=user.id, name=name, parent=parent)
+        db_session.add(playlist)
+        db_session.commit()
+        return jsonify(success=True)
+    except Exception as e:
+        return jsonify(success=False, error='%s' % repr(e))
 
 @app.route('/fork_playlist/<playlist_id>')
 @require_login
@@ -81,6 +103,12 @@ def get_playlist_diff(user, playlist_id1, rev1, playlist_id2, rev2):
 @app.route('/commit/<playlist_id>', methods=['POST'])
 @require_login
 def commit_playlist_changes(user, playlist_id):
+    pass
+
+@app.route('/search')
+@require_login
+def search_for_song(user):
+    # TODO nick
     pass
 
 # Misc
