@@ -252,3 +252,14 @@ header h1 a {
     vertical-align: middle;
     margin-right: 5px;
 }
+
+.buttons {
+    float: right;
+}
+
+.buttons a {
+    border-radius: 6px;
+    padding: 10px;
+    background: rgb(48, 48, 124);
+    cursor: pointer;
+}

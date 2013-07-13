@@ -5,6 +5,7 @@ var PlaylistViewModel = function(json) {
 	this.name = ko.observable(json.name);
 	this.parent = ko.observable(json.parent);
 	this.songs = ko.observableArray();
+    this.hasChanges = ko.observable(false);
 
     this.searchQuery = ko.observable("");
     this.searchTimeout = null;
@@ -33,6 +34,8 @@ var PlaylistViewModel = function(json) {
             artwork_url: result.icon
 		});
 
+        self.hasChanges(true);
+
 		$("#playlist-search-results").slideUp(300, function() {
 			self.searchResults.removeAll();
 			self.searchQuery('');
@@ -41,6 +44,7 @@ var PlaylistViewModel = function(json) {
 
 	this.removeSong = function(song) {
 		self.songs.remove(song);
+        self.hasChanges(true);
 	};
 	this.doSearch = function() {
 		clearTimeout(self.searchTimeout);
@@ -55,13 +59,20 @@ var PlaylistViewModel = function(json) {
 		}, 300);
 	};
 
-	this.beforeTransition = function() {
-		songs = [];
-		ko.utils.arrayForEach(self.songs(), function(item) {
-			songs.push(item);
-		});
-		console.log(JSON.stringify(songs));
-	};
+    this.commitChanges = function() {
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ 'songs': self.songs() }),
+            dataType: 'json',
+            url: '/commit/' + self.id(),
+            success: function(res) {
+                if (res.success) {
+                    self.hasChanges(false);
+                }
+            }
+        });
+    };
 
     this.fadeIn = function(elem) {
         if (elem.nodeType === 1) {

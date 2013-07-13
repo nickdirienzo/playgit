@@ -59,6 +59,9 @@
     </script>
     <script type="text/html" id="playlist-tmpl">
         <div class="playlist">
+            <div class="buttons">
+                <a class="commit-button" data-bind="visible: hasChanges, click: commitChanges">Commit changes</a>
+            </div>
             <h2>
                 <span data-bind="text: name"></span>
                 <span class="playlist-loading" data-bind="visible: isLoading">Loading...</span>
