@@ -20,5 +20,13 @@ var PlaylistViewModel = function(json) {
 	this.removeSong = function(song) {
 		self.songs.remove(song);
 	}
+
+	this.beforeTransition = function() {
+		songs = [];
+		ko.utils.arrayForEach(self.songs(), function(item) {
+			songs.push(item.toJSON());
+		})
+		console.log(JSON.stringify(songs));
+	}
 };
 

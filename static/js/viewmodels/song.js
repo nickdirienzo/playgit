@@ -13,5 +13,14 @@ var SongViewModel = function(json, playlist) {
 	this.removeSong = function() {
 		self.playlist.removeSong(self);
 	}
+
+	this.toJSON = function() {
+		return {
+			id: self.id(),
+			name: self.name(),
+			artist: self.artist(),
+			album: self.album()
+		};
+	}
 };
 
