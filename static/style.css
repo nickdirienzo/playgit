@@ -266,7 +266,7 @@ header h1 a {
 	margin-bottom: 20px;
 }
 
-.sidebar .widget .widget-title {
+.widget-title {
 	font-size: 20px;
 	font-weight: bold;
 	text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
