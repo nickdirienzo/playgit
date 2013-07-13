@@ -1,6 +1,7 @@
 import os
 import sqlalchemy
 from flask import Flask, jsonify, render_template, request, session, Response
+from functools import wraps
 
 app = Flask(__name__, template_folder=os.path.dirname(os.path.abspath(__file__)))
 app.secret_key = 'yoloswag'
@@ -10,6 +11,7 @@ from database import db_session, User
 # User handling
 
 def require_login(original_fn):
+    @wraps(original_fn)
     def new_fn(*args, **kwargs):
         user_id = session.get('user_id')
         if user_id:
@@ -46,6 +48,30 @@ def signup():
         return jsonify(success=False)
 
 # API endpoints
+
+@app.route('/playlists')
+@require_login
+def get_user_playlists(user):
+    pass
+
+@app.route('/playlist/<playlist_id>/current')
+@require_login
+def get_playlist(user, playlist_id):
+    pass
+
+@app.route('/playlist/<playlist_id>/log')
+def get_playlist_log(user, playlist_id):
+    pass
+
+@app.route('/diff/<playlist_id1>/<rev1>/<playlist_id2>/<rev2>')
+@require_login
+def get_playlist_diff(user, playlist_id1, rev1, playlist_id2, rev2):
+    pass
+
+@app.route('/commit/<playlist_id>', methods=['POST'])
+@require_login
+def commit_playlist_changes(user, playlist_id):
+    pass
 
 # Misc
 
