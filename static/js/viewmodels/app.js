@@ -44,7 +44,6 @@ var AppViewModel = function(json) {
 		if(_playlists) {
 			_.each(_playlists, function(playlist) {
 				self.playlists.push(new PlaylistViewModel(playlist));
-				console.log(self.playlists());
 			});
 		}
 	};
