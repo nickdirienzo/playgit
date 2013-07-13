@@ -13,7 +13,7 @@ var PlaylistViewModel = function(json) {
     this.searchQuery = ko.observable("");
     this.searchTimeout = null;
     this.searchResults = ko.observableArray();
-    this.pr = ko.observableArray(json.pull_requests || []);
+    this.pr = ko.observableArray();
 
     this.history = ko.observableArray();
     $.get('/playlist/' + this.id() + '/log', function(data) {
@@ -24,6 +24,7 @@ var PlaylistViewModel = function(json) {
     $.get('/playlist/' + this.id(), function(data) {
         self.isLoading(false);
         self.songs(data.playlist.songs);
+        self.pr(data.playlist.pull_requests);
     });
 
     $.get('/user/' + json.uid, function(data) {
