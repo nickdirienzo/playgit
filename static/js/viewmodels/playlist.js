@@ -88,13 +88,9 @@ var PlaylistViewModel = function(json) {
 		});
 	};
 
-    this.displayPullRequest = function() {
-        // TODO PETER
-    };
-
 	this.pullRequest = function() {
 		$.get('/pr/' + self.id() + '/' + self.parent(), function(res) {
-			alert("pull request sent! wooooo");
+			appVM.transition('playlist-tmpl', appVM.findPlaylist(self.parent()));
         });
 	};
 
