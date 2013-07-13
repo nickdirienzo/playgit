@@ -16,7 +16,7 @@ var PlaylistViewModel = function(json) {
     this.searchResults = ko.observableArray();
     this.pr = ko.observableArray();
     this.noPullRequests = ko.computed(function() {
-        return self.pr.length === 0;
+        return self.pr().length === 0;
     });
 
     this.history = ko.observableArray();
@@ -30,6 +30,7 @@ var PlaylistViewModel = function(json) {
     this.isLoading = ko.observable(true);
     this.refresh = function() {
     	self.songs.removeAll();
+    	self.pr.removeAll();
     	self.isLoading(true);
     	$.get('/playlist/' + this.id(), function(data) {
 	        self.isLoading(false);
