@@ -1,4 +1,4 @@
-import time
+import time, datetime
 import os
 import urllib2
 from flask import Flask, jsonify, render_template, request, session, Response, redirect, url_for
@@ -10,7 +10,7 @@ app.secret_key = 'yoloswag'
 RDIO_CONSUMER_KEY = 'c8pehjw6u8wdatpgxmq8jqkw'
 RDIO_CONSUMER_SECRET = '9ADNaSuKSG'
 
-from database import db_session, User, Playlist, Activity, Song, PullRequest
+from database import db_session, User, Playlist, Activity, Song, PullRequest, transform_track_keys
 
 def AuthedRdio(at, ats):
     return Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (at, ats))
@@ -153,8 +153,8 @@ def create_playlist(user):
         playlist = Playlist(uid=user.id, name=name, parent=parent)
         db_session.add(playlist)
         db_session.commit()
-        playlist.initGit(playlist.id) # xxx might not work
-        fork_activity = Activity(user.id, " created playlist <a href='#playlist?id=" + playlist.id + "'>" + name + "</a>")
+        playlist.initGit() # xxx might not work
+        fork_activity = Activity(user.id, " created playlist <a href='#playlist?id=%d'>%s</a>" % (playlist.id, name))
         db_session.add(fork_activity)
         db_session.commit()
         return jsonify(success=True, playlist=playlist.toDict())
@@ -170,7 +170,7 @@ def fork_playlist(user, playlist_id):
         db_session.add(new_playlist)
         db_session.commit()
         new_playlist.initGit()
-        fork_activity = Activity(user.id, " forked playlist <a href='#playlist?id=" + str(new_playlist.id) + "'>" + playlist.name + "</a>")
+        fork_activity = Activity(user.id, " forked playlist <a href='#playlist?id=%d'>%s</a>" % (new_playlist.id, playlist.name))
         db_session.add(fork_activity)
         db_session.commit()
         return jsonify(success=True, playlist=new_playlist.toDict(with_songs=True))
@@ -202,11 +202,22 @@ def get_playlist_diff(user, playlist_id1, rev1, playlist_id2, rev2):
 
 @app.route('/diff/<playlist_id_1>/<playlist_id_2>')
 @require_login
-def get_remote_diff(playlist_id_1, playlist_id_2):
+def get_remote_diff(user, playlist_id_1, playlist_id_2):
     playlist_1 = Playlist.query.filter(Playlist.id == playlist_id_1 and Playlist.uid == session.get('user_id')).first()
     if not playlist_1:
         return jsonify(error='invalid playlist')
     changes = playlist_1.git().diff(str(playlist_id_2))
+
+    songIdsThatChanged = []
+    howTheyChanged = []
+    for change in changes:
+        songIdsThatChanged.append(change[1])
+        howTheyChanged.append(change[0])
+    songsThatChanged = transform_track_keys(songIdsThatChanged)
+
+    changes = []
+    for i, song in enumerate(songsThatChanged):
+        changes.append([howTheyChanged[i], songsThatChanged[i]['name']])
     return jsonify(diff=changes)
 
 @app.route('/commit/<playlist_id>', methods=['POST'])
@@ -249,29 +260,31 @@ def commit_playlist_changes(user, playlist_id):
     msg = added_msg + ' ' + removed_msg
     playlist.git().update(song_keys)
     playlist.git().commit(msg)
-    
-    success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
-    if 'result' in success:
-        success = success['result']
-    else:
-        return jsonify(sync=False, commit=True)
-    print success
-    if success:
-        print 'deleted successfully...'
-        new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': playlist.description, 'tracks': ','.join(song_keys)})['result']
-        print new_playlist
-        print 'created new playlist?'
-        if new_playlist['key'] != playlist.key:
-            db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
-            db_session.commit()
-        activity = Activity(user.id, 'modified <a href="#playlist?id=' + playlist_id + '">' + playlist.name + '</a>.')
-        db_session.add(activity)
-        db_session.commit()
-        return jsonify(sync=True, commit=True)
-    else:
-        print 'epic fail.'
-        return jsonify(sync=False, commit=True)
-    
+
+    activity = Activity(user.id, 'modified <a href="#playlist?id=%d">%s</a>' % (playlist.id, playlist.name))
+    db_session.add(activity)
+    db_session.commit()
+
+    new_playlist = rdio.call('createPlaylist', params={'name': '%s (Old)' % playlist.name, 'description': playlist.description, 'tracks': ','.join(current_songs)})['result']
+    if new_playlist['name'] == '%s (Old)' % playlist.name:
+        # Confirmation of backup
+        reply = rdio.call('deletePlaylist', params={'playlist': playlist.key})
+        print reply
+        try:
+            success = reply['result']
+            if success:
+                backup = new_playlist
+                new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': playlist.description, 'tracks': ','.join(song_keys)})['result']
+                if new_playlist['name'] == playlist.name:
+                    print 'created new playlist'
+                    if new_playlist['key'] != playlist.key:
+                        db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
+                        db_session.commit()
+                    rdio.call('deletePlaylist', params={'playlist': backup['key']})
+                    return jsonify(sync=True, commit=True)
+        except KeyError as e:
+            print repr(e)
+            return jsonify(sync=False, commit=True)
 
 @app.route('/search')
 @require_login
@@ -290,14 +303,14 @@ def get_latest_activity():
     latest_activity = Activity.query.order_by(Activity.activity_date.desc()).limit(25).all()
     return jsonify(activity=[a.toDict() for a in latest_activity])
 
-@app.route('/pr/<forked_playlist_id>/<parent_playlist_id>', methods=['POST'])
+@app.route('/pr/<forked_playlist_id>/<parent_playlist_id>', methods=['GET'])
 @require_login
-def pull_request(forked_playlist_id, parent_playlist_id):
+def pull_request(user, forked_playlist_id, parent_playlist_id):
     parent = Playlist.query.filter(Playlist.id == parent_playlist_id).first()
     fork = Playlist.query.filter(Playlist.id == forked_playlist_id).first()
     if not parent or not fork:
         return jsonify(error='invalid playlist id')
-    pr = PullRequest(parent.uid, parent.id, session.get('user_id'), fork.id, False, None, time.time())
+    pr = PullRequest(parent.uid, parent.id, session.get('user_id'), fork.id, False, None, datetime.datetime.now())
     db_session.add(pr)
     db_session.commit()
     return jsonify(success=True)
