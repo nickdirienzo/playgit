@@ -147,7 +147,9 @@ def get_user_playlists(user):
 @app.route('/create_playlist', methods=['POST'])
 @require_login
 def create_playlist(user):
+    print 'tt'
     try:
+        print 'test'
         name = request.form['name']
         if 'parent' in request.form:
             parent = int(request.form['parent'])
@@ -268,30 +270,20 @@ def commit_playlist_changes(user, playlist_id):
     db_session.add(activity)
     db_session.commit()
 
-    print {'name': '%s (Old)' % playlist.name, 'description': 'test', 'tracks': ','.join(current_songs)};
-    new_playlist = rdio.call('createPlaylist', params={'name': '%s (Old)' % playlist.name, 'description': 'test', 'tracks': ','.join(current_songs)})['result']
-    if new_playlist['name'] == '%s (Old)' % playlist.name:
-        # Confirmation of backup
-        print 'here'
-        print playlist.key
+    if playlist.key:
         reply = rdio.call('deletePlaylist', params={'playlist': playlist.key})
-        print reply
-        try:
-            success = reply['result']
-            if success:
-                print 'inside'
-                backup = new_playlist
-                new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': 'test', 'tracks': ','.join(song_keys)})['result']
-                if new_playlist['name'] == playlist.name:
-                    print 'created new playlist'
-                    if new_playlist['key'] != playlist.key:
-                        db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
-                        db_session.commit()
-                    rdio.call('deletePlaylist', params={'playlist': backup['key']})
-                    return jsonify(sync=True, commit=True)
-        except KeyError as e:
-            print repr(e)
-            return jsonify(sync=False, commit=True)
+    try:
+        print 'inside'
+        new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': 'test', 'tracks': ','.join(song_keys)})['result']
+        if new_playlist['name'] == playlist.name:
+            print 'created new playlist'
+            if new_playlist['key'] != playlist.key:
+                db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
+                db_session.commit()
+            return jsonify(sync=True, commit=True)
+    except KeyError as e:
+        print repr(e)
+        return jsonify(sync=False, commit=True)
 
 @app.route('/search')
 @require_login
