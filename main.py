@@ -26,15 +26,14 @@ def import_new_user_playlists(playlist_json, uid):
             track_ids = list()
             for song in playlist['tracks']:
                 ts = Song.query.filter(Song.key == song['key']).first()
-                print ts
-                if ts is None:
+                if not ts:
                     ts = Song(song['name'], song['album'], song['artist'], song['icon'], song['key'])
                     db_session.add(ts)
+                    db_session.commit()
                     track_ids.append(song['key'])
             p.git().writeTrackKeys(track_ids)
         else:
             continue
-    db_session.commit()
 
 # User handling
 
