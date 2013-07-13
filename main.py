@@ -193,6 +193,15 @@ def get_playlist_log(user, playlist_id):
 def get_playlist_diff(user, playlist_id1, rev1, playlist_id2, rev2):
     pass
 
+@app.route('/diff/<playlist_id_1>/<playlist_id_2>')
+@require_login
+def get_remote_diff(playlist_id_1, playlist_id_2):
+    playlist_1 = Playlist.query.filter(Playlist.id == playlist_id_1 and Playlist.uid == session.get('user_id')).first()
+    if not playlist_1:
+        return jsonify(error='invalid playlist')
+    changes = playlist_1.git().diff(str(playlist_id_2))
+    return jsonify(diff=changes)
+
 @app.route('/commit/<playlist_id>', methods=['POST'])
 @require_login
 def commit_playlist_changes(user, playlist_id):
