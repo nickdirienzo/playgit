@@ -21,16 +21,14 @@ class Song(Base):
     album = Column(String(100))
     artist = Column(String(100))
     artwork_url = Column(String(100))
-    year = Column(Integer)
-    genre = Column(String(100))
+    key = Column(String(100))
 
-    def __init__(self, name, album=None, artist=None, artwork_url=None, year=None, genre=None):
+    def __init__(self, name, album=None, artist=None, artwork_url=None, key=None):
         self.name = name
         self.album = album
         self.artist = artist
         self.artwork_url = artwork_url
-        self.year = year
-        self.genre = genre
+        self.key = key
 
     def __repr__(self):
         return '<Song %r>' % self.name
@@ -43,21 +41,25 @@ class Playlist(Base):
     parent = Column(Integer)
     create_date = Column(DateTime, default=datetime.datetime.now)
     _git = None
+    key = Column(String(100))
+    description = Column(String(100))
 
-    def __init__(self, uid, name, parent=None):
+    def __init__(self, uid, name, parent=None, key=None, description=None):
         self.uid = uid
         self.name = name
         self.parent = parent
+        self.key = key
+        self.description = description
 
     def __repr__(self):
         return '<Playlist %r %r>' % (self.name, self.path)
 
-    def initGit(self, id):
+    def initGit(self):
         if self.parent:
             parentGit = Git(self.parent)
-            self._git = parentGit.fork(id)
+            self._git = parentGit.fork(self.id)
         else:
-            self._git = Git(id)
+            self._git = Git(self.id)
 
     def git(self):
         if self._git is None:
@@ -71,6 +73,8 @@ class Playlist(Base):
             'name': self.name,
             'parent': self.parent,
             'create_date': self.create_date,
+            'description': self.description,
+            'key': self.key
         }
 
         if with_songs:
@@ -109,24 +113,21 @@ class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     username = Column(String(100), unique=True)
-    token = Column(String(100))
     icon = Column(String(100))
-    first_name = Column(String(100))
-    last_name = Column(String(100))
+    name = Column(String(100))
+    key = Column(String(100))
 
-    def __init__(self, username, token, icon, first_name, last_name):
+    def __init__(self, username, key, icon, name):
         self.username = username
-        self.token = token
         self.icon = icon
-        self.first_name = first_name
-        self.last_name = last_name
+        self.name = name
+        self.key = key
 
     def toDict(self):
         return {
             'username': self.username,
             'icon': self.icon,
-            'first_name': self.first_name,
-            'last_name': self.last_name
+            'name': self.name
         }
 
     def __repr__(self):
