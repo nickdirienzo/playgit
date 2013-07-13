@@ -65,7 +65,7 @@ class Playlist(Base):
         self.description = description
 
     def __repr__(self):
-        return '<Playlist %r %r>' % (self.name, self.path)
+        return '<Playlist %r>' % (self.name)
 
     def initGit(self):
         if self.parent:
