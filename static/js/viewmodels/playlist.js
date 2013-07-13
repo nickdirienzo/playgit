@@ -15,6 +15,9 @@ var PlaylistViewModel = function(json) {
     this.searchTimeout = null;
     this.searchResults = ko.observableArray();
     this.pr = ko.observableArray();
+    this.noPullRequests = ko.computed(function() {
+        return self.pr.length === 0;
+    });
 
     this.history = ko.observableArray();
     this.refreshHistory = function() {
