@@ -159,7 +159,7 @@ def create_playlist(user):
         db_session.add(playlist)
         db_session.commit()
         playlist.initGit() # xxx might not work
-        fork_activity = Activity(user.id, " created playlist <a href='#playlist?id=%d'>%s</a>" % (playlist.id, name))
+        fork_activity = Activity(user.id, " created <a href='#playlist?id=%d'>%s</a>" % (playlist.id, name))
         db_session.add(fork_activity)
         db_session.commit()
         return jsonify(success=True, playlist=playlist.toDict())
@@ -260,14 +260,16 @@ def commit_playlist_changes(user, playlist_id):
         added_msg = 'Added '
         for a in added:
             ts = Song.query.filter(Song.key == a).first()
-            added_msg += '%s by %s ' % (ts.name, ts.artist)
+            if ts:
+                added_msg += '%s by %s ' % (ts.name, ts.artist)
     else:
         added_msg = ''
     if len(removed) > 0:
         removed_msg = 'Removed '
         for r in removed:
             s = Song.query.filter(Song.key == r).first()
-            removed_msg += '%s by %s ' % (s.name, s.artist)
+            if s:
+                removed_msg += '%s by %s ' % (s.name, s.artist)
     else:
         removed_msg = ''
     msg = added_msg + ' ' + removed_msg
