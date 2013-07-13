@@ -60,13 +60,7 @@ var AppViewModel = function(json) {
 	}
 
 	this.transition = function(template, data, noAnim) {
-		if(template == self.stateTemplate()) return;
-
-		if(noAnim) {
-			animationTimeout = 0;
-		} else {
-			animationTimeout = 300;
-		}
+		if(template == self.stateTemplate() && data == self.stateData()) return;
 
 		beforeTransition = self.stateData().beforeTransition;
 		if(typeof beforeTransition === 'function') {
@@ -83,15 +77,16 @@ var AppViewModel = function(json) {
 				location.hash = template.substring(0, template.length-5);
 			}
 		}
+	};
 
-		$('#wrapper').slideUp(animationTimeout, function() {
+	this.reRender = function(template, data) {
+		$('#wrapper').slideUp(300, function() {
 			self.stateTemplate('null-tmpl');
 			self.stateData(data);
 			self.stateTemplate(template);
 		});
 		$("#wrapper").slideDown(300);
-
-	};
+	}
 
 	this.clickLogin = function() {
 		$.get('/login', function(data) {

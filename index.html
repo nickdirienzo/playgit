@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="static/style.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script type="text/javascript" src="static/js/lib/underscore-1.5.1.js"></script>
+    <script type="text/javascript" src="static/js/lib/hashchange-1.3.js"></script>
     <script type="text/javascript" src="static/js/lib/knockout-2.3.0.js"></script>
 
     <script type="text/javascript" src="static/js/viewmodels/activity.js"></script>
@@ -60,14 +61,13 @@
     <script type="text/html" id="playlist-tmpl">
         <div class="playlist">
             <div class="buttons">
+                <a class="pull-request-button" data-bind="visible: parent, click: pullRequest">Pull request</a>
+                <a class="fork-button" data-bind="visible: owner, click: clickFork">Fork</a>
                 <a class="commit-button" data-bind="visible: hasChanges, click: commitChanges">Commit changes</a>
             </div>
             <h2>
+                <div class="owner-name" data-bind="text: username"></div>
                 <span data-bind="text: name"></span>
-                <span class="playlist-songsCount"><span data-bind="text: songsCount"></span> songs</span>
-                <input type="button" value="Fork" data-bind="visible: owner, click: clickFork">
-                <input type="button" value="Pull Request" data-bind="visible: parent, click: pullRequest">
-                <input type="button" value="Delete Playlist" data-bind="visible: owner, click: deletePlaylist">
                 <span class="playlist-loading" data-bind="visible: isLoading">Loading...</span>
                 <span class="playlist-songsCount" data-bind="visible: !isLoading"><span data-bind="text: songsCount"></span> songs</span>
             </h2>

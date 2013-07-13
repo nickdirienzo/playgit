@@ -263,3 +263,9 @@ header h1 a {
     background: rgb(48, 48, 124);
     cursor: pointer;
 }
+
+.owner-name {
+    font-size: 12pt;
+    font-weight: normal;
+    margin-bottom: 2px;
+}
