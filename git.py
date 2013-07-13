@@ -57,6 +57,7 @@ class Git():
     #just copy the directory?
     def fork(self, playlistId):
         newDir = os.path.join(self._root, self._dirName, str(playlistId))
+        print newDir
         if not os.path.exists(newDir):
             subprocess.call('cp -r ' + self._playlistDir + '/. ' + newDir, shell=True)
         return Git(playlistId)

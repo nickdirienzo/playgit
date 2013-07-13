@@ -167,6 +167,8 @@ def fork_playlist(user, playlist_id):
         new_playlist = Playlist(uid=user.id, name=playlist.name, parent=playlist.id)
         db_session.add(new_playlist)
         db_session.commit()
+        print "HERE"
+        new_playlist.initGit()
         return jsonify(success=True, playlist=new_playlist.toDict(with_songs=True))
     except Exception as e:
         return jsonify(success=False, error='%s' % repr(e))

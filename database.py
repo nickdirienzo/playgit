@@ -15,7 +15,6 @@ Base = declarative_base()
 Base.query = db_session.query_property()
 
 def transform_track_keys(track_keys):
-    print 'TRACK KEYS', track_keys
     tracks = list()
     for track_key in track_keys:
         t = Song.query.filter(Song.key == track_key).first()
