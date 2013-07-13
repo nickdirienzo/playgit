@@ -249,7 +249,15 @@ def commit_playlist_changes(user, playlist_id):
     playlist.git().update(song_keys)
     playlist.git().commit(msg)
     
-    success = rdio.call('deletePlaylist', params={'playlist': playlist.key})['result']
+    success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
+    try_again = 0
+    while 'result' not in success or try_again < 3:
+        success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
+        try_again += 1 
+    if 'result' not in success and try_again >= 3:
+        return jsonify(error='failed to update rdio')
+    elif 'result' in success:
+        success = success['result']
     print success
     if success:
         print 'deleted successfully...'
