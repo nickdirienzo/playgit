@@ -42,7 +42,7 @@ class Playlist(Base):
     name = Column(String(100))
     parent = Column(Integer)
     create_date = Column(DateTime, default=datetime.datetime.now)
-    git = None
+    _git = None
 
     def __init__(self, uid, name, parent=None):
         self.uid = uid
@@ -55,9 +55,14 @@ class Playlist(Base):
     def initGit(self, id):
         if self.parent:
             parentGit = Git(self.parent)
-            self.git = parentGit.fork(id)
+            self._git = parentGit.fork(id)
         else:
-            self.git = Git(id)
+            self._git = Git(id)
+
+    def git(self):
+        if self._git is None:
+            self._git = Git(self.id)
+        return self._git
 
     def toDict(self, with_songs=False):
         info = {
@@ -70,7 +75,7 @@ class Playlist(Base):
 
         if with_songs:
             # Load in song info
-            songs = self.git.getTrackIds()
+            songs = self.git().getTrackIds()
             info['songs'] = songs
 
         return info
