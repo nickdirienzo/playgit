@@ -42,7 +42,7 @@ var PlaylistViewModel = function(json) {
 	this.background = ko.computed(function() {
 		var background = "";
 		for(var i = 0; i < 4; i ++) {
-            var song = self.songs()[i % self.songs().length];
+            var song = self.songs()[Math.floor(Math.random()*self.songs().length)];
 			if(song) {
 				background += '<img src="' + song.artwork_url + '" />';
 			}
