@@ -265,16 +265,20 @@ def commit_playlist_changes(user, playlist_id):
     db_session.add(activity)
     db_session.commit()
 
-    new_playlist = rdio.call('createPlaylist', params={'name': '%s (Old)' % playlist.name, 'description': playlist.description, 'tracks': ','.join(current_songs)})['result']
+    print {'name': '%s (Old)' % playlist.name, 'description': 'test', 'tracks': ','.join(current_songs)};
+    new_playlist = rdio.call('createPlaylist', params={'name': '%s (Old)' % playlist.name, 'description': 'test', 'tracks': ','.join(current_songs)})['result']
     if new_playlist['name'] == '%s (Old)' % playlist.name:
         # Confirmation of backup
+        print 'here'
+        print playlist.key
         reply = rdio.call('deletePlaylist', params={'playlist': playlist.key})
         print reply
         try:
             success = reply['result']
             if success:
+                print 'inside'
                 backup = new_playlist
-                new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': playlist.description, 'tracks': ','.join(song_keys)})['result']
+                new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': 'test', 'tracks': ','.join(song_keys)})['result']
                 if new_playlist['name'] == playlist.name:
                     print 'created new playlist'
                     if new_playlist['key'] != playlist.key:
