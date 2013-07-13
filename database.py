@@ -104,7 +104,7 @@ class Playlist(Base):
             if prs:
                 for pr in prs:
                     ret.append(pr.toDict())
-            info['pull_requests'] = ret
+            info['pull_requests'] = ret[::-1]
 
         return info
 
