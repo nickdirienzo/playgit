@@ -28,12 +28,18 @@ var PRModel = function(json) {
     });
 
 	this.childName = ko.computed(function() {
-		// return self.child().username() + '/' + self.child().name() + ' to';
-        return 'child';
+        if (self.child() != null) {
+		    return self.child_username() + '/' + self.child().name() + ' to';
+        } else {
+            return self.child_username() + ' to';
+        }
 	})
 	this.parentName = ko.computed(function() {
-		// return self.parent().username() + '/' + self.parent().name();
-        return 'parent'
+        if (self.parent() != null) {
+		    return self.parent().username() + '/' + self.parent().name();
+        } else {
+            return 'parent';
+        }
 	})
 
 	this.acceptPR = function() {
