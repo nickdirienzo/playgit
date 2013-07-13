@@ -44,7 +44,6 @@ var AppViewModel = function(json) {
 		if(_playlists) {
 			_.each(_playlists, function(playlist) {
 				self.playlists.push(new PlaylistViewModel(playlist));
-				console.log(self.playlists());
 			});
 		}
 	};
@@ -61,7 +60,7 @@ var AppViewModel = function(json) {
 	}
 
 	this.transition = function(template, data, noAnim) {
-		if(template == self.stateTemplate()) return;
+		if(template == self.stateTemplate() && data == self.stateData()) return;
 
 		if(noAnim) {
 			animationTimeout = 0;
