@@ -1,3 +1,4 @@
+import time
 import os
 import urllib2
 from flask import Flask, jsonify, render_template, request, session, Response, redirect, url_for
@@ -9,7 +10,7 @@ app.secret_key = 'yoloswag'
 RDIO_CONSUMER_KEY = 'c8pehjw6u8wdatpgxmq8jqkw'
 RDIO_CONSUMER_SECRET = '9ADNaSuKSG'
 
-from database import db_session, User, Playlist, Activity, Song
+from database import db_session, User, Playlist, Activity, Song, PullRequest
 
 def AuthedRdio(at, ats):
     return Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (at, ats))
@@ -226,6 +227,30 @@ def search_for_song(user):
 def get_latest_activity():
     latest_activity = Activity.query.order_by(Activity.activity_date.desc()).limit(25).all()
     return jsonify(activity=[a.toDict() for a in latest_activity])
+
+@app.route('/pr/<forked_playlist_id>/<parent_playlist_id>', methods=['POST'])
+@require_login
+def pull_request(forked_playlist_id, parent_playlist_id):
+    parent = Playlist.query.filter(Playlist.id == parent_playlist_id).first()
+    fork = Playlist.query.filter(Playlist.id == forked_playlist_id).first()
+    if not parent or not fork:
+        return jsonify(error='invalid playlist id')
+    pr = PullRequest(parent.uid, parent.id, session.get('user_id'), fork.id, False, None, time.time())
+    db_session.add(pr)
+    db_session.commit()
+    return jsonify(success=True)
+
+@app.route('/playlist/<playlist_id>/pr')
+@require_login
+def pull_requests_for_playlist(playlist_id):
+    prs = PullRequest.query.filter(PullRequest.parent_pid == playlist_id).all()
+    if prs:
+        ret = list()
+        for pr in prs:
+            ret.append(pr.toDict())
+        return jsonify(pull_requests=ret)
+    else:
+        return jsonify(pull_requests=None)
 
 # Misc
 

@@ -39,3 +39,16 @@ CREATE TABLE activities (
     activity_date TIMESTAMP DEFAULT now(),
     description VARCHAR(255)
 );
+
+DROP TABLE IF EXISTS pullrequests CASCADE;
+CREATE SEQUENCE pr_id_seq;
+CREATE TABLE pullrequests (
+    id INTEGER PRIMARY KEY DEFAULT nextval('pr_id_seq'),
+    parent_uid INTEGER NOT NULL REFERENCES users (id),
+    parent_pid INTEGER NOT NULL REFERENCES playlists (id),
+    child_uid INTEGER NOT NULL REFERENCES users (id),
+    child_pid INTEGER NOT NULL REFERENCES playlists (id),
+    accepted BOOLEAN,
+    accepted_on TIMESTAMP,
+    requested_on TIMESTAMP
+);

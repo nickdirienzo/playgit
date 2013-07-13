@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Boolean
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -132,6 +132,37 @@ class User(Base):
 
     def __repr__(self):
         return self.toDict()
+
+class PullRequest(Base):
+    __tablename__ = 'pullrequests'
+    id = Column(Integer, primary_key=True)
+    parent_uid = Column(Integer)
+    parent_pid = Column(Integer)
+    child_uid = Column(Integer)
+    child_pid = Column(Integer)
+    accepted = Column(Boolean)
+    accepted_on = Column(DateTime)
+    requested_on = Column(DateTime)
+
+    def __init__(self, parent_uid, parent_pid, child_uid, child_pid, accepted, accepted_on, requested_on):
+        self.parent_uid = parent_uid
+        self.parent_pid = parent_pid
+        self.child_uid = child_uid
+        self.child_pid = child_pid
+        self.accepted = accepted
+        self.accepted_on = accepted_on
+        self.requested_on = requested_on
+
+    def toDict(self):
+        return {
+            'parent_uid': self.parent_uid,
+            'parent_pid': self.parent_pid,
+            'child_uid': self.child_uid,
+            'child_pid': self.child_pid,
+            'accepted': self.accepted,
+            'accepted_on': self.accepted_on,
+            'requested_on': self.requested_on
+        }
 
 def init_db():
     Base.metadata.create_all(bind=engine)
