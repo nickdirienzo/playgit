@@ -71,7 +71,7 @@
                 <a class="fork-button" data-bind="visible: owner, click: clickFork"><span class="icon">x</span>Fork</a>
                 <a class="commit-button" data-bind="visible: hasChanges, click: commitChanges">
                     <span class="icon">=</span>
-                    Commit changes
+                    <span data-bind="text: commitLabel"></span>
                 </a>
             </div>
             <h2>
@@ -92,6 +92,9 @@
             <div class="sidebar">
                 <div class="widget">
                     <div class="widget-title">Pull Requests</div>
+                    <span class="no-pull-requests" data-bind="visible: pr">
+                    No pull requests yet.
+                    </span>
                     <ul data-bind="foreach: pr" class="pull-requests">
                         <li data-bind="click: $parent.displayPullRequest">
                             <span data-bind="text: requested_on" class="date"></span>
@@ -102,7 +105,7 @@
                 </div>
                 <div class="widget">
                     <div class="widget-title">History</div>
-                    <ul data-bind="foreach: history" class="history">
+                    <ul data-bind="foreach: history, afterAdd: fadeIn" class="history">
                         <li data-bind="text: $data"></li>
                     </ul>
                 </div>

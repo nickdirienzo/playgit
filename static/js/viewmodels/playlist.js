@@ -9,6 +9,7 @@ var PlaylistViewModel = function(json) {
 	this.owner = ko.observable(json.uid != appVM.user.id); // TODO flip this
     this.username = ko.observable('');
     this.hasChanges = ko.observable(false);
+    this.commitLabel = ko.observable("");
 
     this.searchQuery = ko.observable("");
     this.searchTimeout = null;
@@ -16,9 +17,12 @@ var PlaylistViewModel = function(json) {
     this.pr = ko.observableArray();
 
     this.history = ko.observableArray();
-    $.get('/playlist/' + this.id() + '/log', function(data) {
-        self.history(data.history);
-    });
+    this.refreshHistory = function() {
+        $.get('/playlist/' + this.id() + '/log', function(data) {
+            self.history(data.history);
+        });
+    };
+    this.refreshHistory();
 
     this.isLoading = ko.observable(true);
     $.get('/playlist/' + this.id(), function(data) {
@@ -58,6 +62,7 @@ var PlaylistViewModel = function(json) {
 		});
 
         self.hasChanges(true);
+        self.commitLabel("Commit changes");
 
 		$("#playlist-search-results").slideUp(300, function() {
 			self.searchResults.removeAll();
@@ -90,6 +95,7 @@ var PlaylistViewModel = function(json) {
 	this.removeSong = function(song) {
 		self.songs.remove(song);
         self.hasChanges(true);
+        self.commitLabel("Commit changes");
 	};
 	this.doSearch = function() {
 		clearTimeout(self.searchTimeout);
@@ -105,6 +111,7 @@ var PlaylistViewModel = function(json) {
 	};
 
     this.commitChanges = function() {
+        self.commitLabel("Committing...");
         $.ajax({
             type: 'POST',
             contentType: 'application/json',
@@ -112,8 +119,10 @@ var PlaylistViewModel = function(json) {
             dataType: 'json',
             url: '/commit/' + self.id(),
             success: function(res) {
+                self.commitLabel("");
                 if (res.commit) {
                     self.hasChanges(false);
+                    self.refreshHistory();
                 }
             }
         });
