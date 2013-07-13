@@ -177,6 +177,7 @@ class PullRequest(Base):
     def toDict(self):
         requester = User.query.filter(User.id == self.child_uid).first()
         return {
+            'id': self.id,
             'parent_uid': self.parent_uid,
             'parent_pid': self.parent_pid,
             'child_uid': self.child_uid,

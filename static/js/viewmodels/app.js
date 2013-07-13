@@ -41,7 +41,6 @@ var AppViewModel = function(json) {
 	}
 	this.newPlaylist = function() {
 		var playlistName = window.prompt('New playlist name?');
-		console.log(playlistName);
 		$.post('/create_playlist', {name: playlistName}, function() {
 			self.reloadPlaylists();
 		});
@@ -74,6 +73,11 @@ var AppViewModel = function(json) {
 			}
 		});
 		return toReturn;
+	}
+	this.findPR = function(id, callback) {
+		$.get('/pr/' + id, function(data) {
+			callback(data);
+		})
 	}
 
 	this.transition = function(template, data, noAnim) {

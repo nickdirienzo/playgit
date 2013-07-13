@@ -24,7 +24,9 @@ var PlaylistViewModel = function(json) {
     $.get('/playlist/' + this.id(), function(data) {
         self.isLoading(false);
         self.songs(data.playlist.songs);
-        self.pr(data.playlist.pull_requests);
+        _.each(data.playlist.pull_requests, function(pr) {
+        	self.pr.push(new PRModel(pr));
+        });
     });
 
     $.get('/user/' + json.uid, function(data) {
@@ -66,7 +68,6 @@ var PlaylistViewModel = function(json) {
 
 	this.clickFork = function() {
 		$.get('/fork_playlist/' + json.id, function(data) {
-			console.log(data);
 			appVM.addPlaylists([data.playlist]);
 			appVM.transition('playlist-tmpl', appVM.playlists()[appVM.playlists().length-1]);
 		});
@@ -81,6 +82,17 @@ var PlaylistViewModel = function(json) {
 			alert("pull request sent! wooooo");
         });
 	};
+
+	this.findPR = function(id) {
+		toReturn = null;
+		ko.utils.arrayForEach(self.pr(), function(pr) {
+			if(pr.id() == id) {
+				toReturn = pr;
+				return false;
+			}
+		});
+		return toReturn;
+	}
 
 	this.deletePlaylist = function() {
 

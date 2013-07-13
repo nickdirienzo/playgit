@@ -195,6 +195,14 @@ def get_playlist_log(user, playlist_id):
 
     return jsonify(history=playlist.getLog())
 
+@app.route('/pr/<pr_id>')
+@require_login
+def get_pr(user, pr_id):
+    pr = PullRequest.query.filter(PullRequest.id==pr_id).first()
+    if not pr:
+        return jsonify(error='invalid pr')
+    return jsonify(pr.toDict()) 
+
 @app.route('/diff/<playlist_id1>/<rev1>/<playlist_id2>/<rev2>')
 @require_login
 def get_playlist_diff(user, playlist_id1, rev1, playlist_id2, rev2):
@@ -217,7 +225,7 @@ def get_remote_diff(user, playlist_id_1, playlist_id_2):
 
     changes = []
     for i, song in enumerate(songsThatChanged):
-        changes.append([howTheyChanged[i], songsThatChanged[i]['name'] + ' by ' + songsThatChanged[i]['artist']])
+        changes.append({"change": howTheyChanged[i], "songName": songsThatChanged[i]['name'], 'songArtist': songsThatChanged[i]['artist']})
     return jsonify(diff=changes)
 
 @app.route('/commit/<playlist_id>', methods=['POST'])
