@@ -20,7 +20,7 @@ var PlaylistViewModel = function(json) {
     this.searchResults = ko.observableArray();
     this.pr = ko.observableArray();
     this.noPullRequests = ko.computed(function() {
-        return self.pr.length === 0;
+        return self.pr().length === 0;
     });
 
     this.history = ko.observableArray();
@@ -32,14 +32,19 @@ var PlaylistViewModel = function(json) {
     this.refreshHistory();
 
     this.isLoading = ko.observable(true);
-    $.get('/playlist/' + this.id(), function(data) {
-        self.isLoading(false);
-        self.songs(data.playlist.songs);
-        _.each(data.playlist.pull_requests, function(pr) {
-        	self.pr.push(new PRModel(pr));
-        });
-        $('.playlist-song.added').removeClass('added');
-    });
+    this.refresh = function() {
+    	self.songs.removeAll();
+    	self.pr.removeAll();
+    	self.isLoading(true);
+    	$.get('/playlist/' + this.id(), function(data) {
+	        self.isLoading(false);
+	        self.songs(data.playlist.songs);
+	        _.each(data.playlist.pull_requests, function(pr) {
+	        	self.pr.push(new PRModel(pr));
+	        });
+	        $('.playlist-song.added').removeClass('added');
+	    });
+	};
 
     $.get('/user/' + json.uid, function(data) {
         self.username(data.username);
@@ -87,13 +92,9 @@ var PlaylistViewModel = function(json) {
 		});
 	};
 
-    this.displayPullRequest = function() {
-        // TODO PETER
-    };
-
 	this.pullRequest = function() {
 		$.get('/pr/' + self.id() + '/' + self.parent(), function(res) {
-			alert("pull request sent! wooooo");
+			appVM.transition('playlist-tmpl', appVM.findPlaylist(self.parent()));
         });
 	};
 
