@@ -6,7 +6,7 @@ var playlist = {
 	]
 };
 var playlist2 = {
-	id: 3
+	id: 3,
 	name: "Test Playlist 2",
 	songs: [
 		{ name: "Can't Hold Us", artist: "Macklemore", album: "The Heist" },
