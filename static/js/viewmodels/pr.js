@@ -16,15 +16,15 @@ var PRModel = function(json) {
 
 	appVM.findPlaylist(json.child_pid, function(playlist) {
 		self.child(playlist);
-	})	
-	appVM.findPlaylist(json.parent_pid, function(playlist) {
-		self.parent(playlist);
-	})	
-
-	$.get('/diff/' + self.child().id() + '/' + self.parent().id(), function(data) {
-		self.isLoading(false);
-		self.diff(data.diff);
+        appVM.findPlaylist(json.parent_pid, function(playlist) {
+            self.parent(playlist);
+            $.get('/diff/' + self.child().id() + '/' + self.parent().id(), function(data) {
+                self.isLoading(false);
+                self.diff(data.diff);
+            });
+        });	
 	});
+
 
 	this.childName = ko.computed(function() {
 		return self.child().username() + '/' + self.child().name() + ' to';
