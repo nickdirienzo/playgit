@@ -92,7 +92,13 @@
             <div class="sidebar">
                 <div class="widget">
                     <div class="widget-title">Pull Requests</div>
-                    <ul data-bind="template: {name: 'playlist-list-pr-tmpl', foreach: pr }"></ul>
+                    <ul data-bind="foreach: pr" class="pull-requests">
+                        <li data-bind="click: $parent.displayPullRequest">
+                            <span data-bind="text: requested_on" class="date"></span>
+                            <img data-bind="attr: { src: child_icon }">
+                            <span data-bind="text: child_username" class="username"></span>
+                        </li>
+                    </ul>
                 </div>
                 <div class="widget">
                     <div class="widget-title">History</div>

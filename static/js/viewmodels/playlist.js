@@ -13,7 +13,7 @@ var PlaylistViewModel = function(json) {
     this.searchQuery = ko.observable("");
     this.searchTimeout = null;
     this.searchResults = ko.observableArray();
-    this.pr = ko.observableArray(json.pull_requests || []);
+    this.pr = ko.observableArray();
 
     this.history = ko.observableArray();
     $.get('/playlist/' + this.id() + '/log', function(data) {
@@ -24,6 +24,7 @@ var PlaylistViewModel = function(json) {
     $.get('/playlist/' + this.id(), function(data) {
         self.isLoading(false);
         self.songs(data.playlist.songs);
+        self.pr(data.playlist.pull_requests);
     });
 
     $.get('/user/' + json.uid, function(data) {
@@ -36,9 +37,10 @@ var PlaylistViewModel = function(json) {
 
 	this.background = ko.computed(function() {
 		var background = "";
-		for(var i = 0; i < 8; i ++) {
-			if(self.songs()[i]) {
-				background += '<img src="' + self.songs()[i].artwork_url + '" />';
+		for(var i = 0; i < 4; i ++) {
+            var song = self.songs()[i % self.songs().length];
+			if(song) {
+				background += '<img src="' + song.artwork_url + '" />';
 			}
 		}
 		return background;
@@ -70,6 +72,10 @@ var PlaylistViewModel = function(json) {
 			appVM.transition('playlist-tmpl', appVM.playlists()[appVM.playlists().length-1]);
 		});
 	};
+
+    this.displayPullRequest = function() {
+        // TODO PETER
+    };
 
 	this.pullRequest = function() {
 		$.get('/pr/' + self.id() + '/' + self.parent(), function(res) {

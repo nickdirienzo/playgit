@@ -175,11 +175,14 @@ class PullRequest(Base):
         self.requested_on = requested_on
 
     def toDict(self):
+        requester = User.query.filter(User.id == self.child_uid).first()
         return {
             'parent_uid': self.parent_uid,
             'parent_pid': self.parent_pid,
             'child_uid': self.child_uid,
             'child_pid': self.child_pid,
+            'child_username': requester.username,
+            'child_icon': requester.icon,
             'accepted': self.accepted,
             'accepted_on': self.accepted_on,
             'requested_on': self.requested_on
