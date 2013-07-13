@@ -126,8 +126,8 @@ def search_for_song(user):
 # Misc
 
 @app.route('/test')
-def testingPage(user):
-    return render_template('user.html', user=user)
+def testingPage():
+    return render_template('test.html')
 
 @app.route('/')
 def main():

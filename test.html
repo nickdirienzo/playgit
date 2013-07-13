@@ -1,4 +1,6 @@
-{{ user.id }}
+<style>
+iframe { border: 1px solid #555; display: block; width: 85%; height: 200px; }
+</style>
 <form method="POST" action="/login">
     <h1>Login</h1>
     <input type="text" name="username" placeholder="Username">
@@ -20,4 +22,8 @@
     <input type="submit" value="Create">
 </form>
 
+<h1>/playlists</h1>
+<iframe src="/playlists"></iframe>
+
+<br>
 <a href="/logout">Logout</a>
