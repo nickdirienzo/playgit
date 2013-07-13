@@ -7,6 +7,7 @@
     <script type="text/javascript" src="static/js/lib/underscore-1.5.1.js"></script>
     <script type="text/javascript" src="static/js/lib/knockout-2.3.0.js"></script>
 
+    <script type="text/javascript" src="static/js/viewmodels/activity.js"></script>
     <script type="text/javascript" src="static/js/viewmodels/app.js"></script>
     <script type="text/javascript" src="static/js/viewmodels/playlist.js"></script>
     <script type="text/javascript" src="static/js/viewmodels/song.js"></script>
@@ -37,14 +38,20 @@
         <div></div>
     </script>
     <script type="text/html" id="homepage-tmpl">
-        <div class="main-content">
-
-        </div>
         <div class="sidebar">
             <div class="widget">
                 <div class="widget-title">Your Playlists</div>
                 <ul class='homepage-list-playlist' data-bind="template:{ name: 'homepage-list-playlist-tmpl', foreach: playlists }"></ul>
             </div>
+        </div>
+        <div class="main-content">
+            <ul data-bind="foreach: latestActivity" id="activity-feed">
+                <li>
+                    <img data-bind="attr: { src: user.icon }">
+                    <span data-bind="text: user.username"></span>
+                    <span data-bind="html: description"></span>
+                </li>
+            </ul>
         </div>
     </script>
     <script type="text/html" id="homepage-list-playlist-tmpl">

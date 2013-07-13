@@ -190,7 +190,7 @@ def search_for_song(user):
 @app.route('/activity')
 def get_latest_activity():
     latest_activity = Activity.query.order_by(Activity.activity_date.desc()).limit(25).all()
-    return jsonify([a.toDict() for a in latest_activity])
+    return jsonify(activity=[a.toDict() for a in latest_activity])
 
 # Misc
 
