@@ -7,7 +7,7 @@ playlist = {
 };
 
 appVM = new AppViewModel({
-	playlists: [ playlist ]
+	playlists: [ playlist, playlist ]
 })
 
 ko.applyBindings(appVM);
