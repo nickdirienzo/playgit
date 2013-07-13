@@ -45,18 +45,20 @@ class Playlist(Base):
     path = Column(String(100))
     git = None
 
-    def __init__(self, uid, name, path=None, parent=None):
+    def __init__(self, uid, name, parent=None):
         self.uid = uid
         self.name = name
-
-        if path is None:
-            git = Git(uid + '/' + name)
-
-        self.path = path
         self.parent = parent
 
     def __repr__(self):
         return '<Playlist %r %r>' % (self.name, self.path)
+
+    def initGit(self, id):
+        if self.parent:
+            parentGit = Git(self.parent)
+            git = parentGit.fork(id)
+        else:
+            git = Git(id)
 
     def toDict(self, with_songs=False):
         info = {
