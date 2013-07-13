@@ -13,9 +13,12 @@ class Git():
         if not os.path.exists(self._playlistDir):
             self._createRepo()
 
+    def filePath(self):
+        return os.path.join(self._root, self._dirName, str(self._playlistId), self._fileName)
+
     def getTrackIds(self):
         tracks = []
-        with open(self._fileName, 'r') as f:
+        with open(self.filePath(), 'r') as f:
             trackId = f.read()
             if trackId != '':
                 tracks.append(f.read());
