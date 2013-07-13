@@ -63,7 +63,9 @@ var PlaylistViewModel = function(json) {
 	};
 
 	this.pullRequest = function() {
-
+		$.get('/pr/' + self.id() + '/' + self.parent(), function(res) {
+			alert("pull request sent! wooooo");
+        });
 	};
 
 	this.deletePlaylist = function() {
