@@ -249,7 +249,7 @@ def commit_playlist_changes(user, playlist_id):
     msg = added_msg + ' ' + removed_msg
     playlist.git().update(song_keys)
     playlist.git().commit(msg)
-    
+
     success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
     if 'result' in success:
         success = success['result']
@@ -271,7 +271,7 @@ def commit_playlist_changes(user, playlist_id):
     else:
         print 'epic fail.'
         return jsonify(sync=False, commit=True)
-    
+
 
 @app.route('/search')
 @require_login
