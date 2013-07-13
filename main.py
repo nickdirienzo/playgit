@@ -249,26 +249,31 @@ def commit_playlist_changes(user, playlist_id):
     playlist.git().update(song_keys)
     playlist.git().commit(msg)
     
-    success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
-    try_again = 0
-    while 'result' not in success or try_again < 3:
+    try:
         success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
-        try_again += 1 
-    if 'result' not in success and try_again >= 3:
-        return jsonify(error='failed to update rdio')
-    elif 'result' in success:
-        success = success['result']
-    print success
-    if success:
-        print 'deleted successfully...'
-        new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': playlist.description, 'tracks': ','.join(song_keys)})['result']
-        print new_playlist
-        print 'created new playlist?'
-        if new_playlist['key'] != playlist.key:
-            db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
-            db_session.commit()
-    else:
-        print 'epic fail.'
+        try_again = 0
+        while 'result' not in success or try_again < 3:
+            print 'try again %s' % try_again
+            success = rdio.call('deletePlaylist', params={'playlist': playlist.key})
+            try_again += 1 
+        if 'result' not in success and try_again >= 3:
+            print 'cant try again'
+            return jsonify(error='failed to update rdio')
+        elif 'result' in success:
+            success = success['result']
+        print success
+        if success:
+            print 'deleted successfully...'
+            new_playlist = rdio.call('createPlaylist', params={'name': playlist.name, 'description': playlist.description, 'tracks': ','.join(song_keys)})['result']
+            print new_playlist
+            print 'created new playlist?'
+            if new_playlist['key'] != playlist.key:
+                db_session.query(Playlist).filter(Playlist.id == playlist_id).update({'key': new_playlist['key']})
+                db_session.commit()
+        else:
+            print 'epic fail.'
+            return jsonify(error='failed to update rdio')
+    except:
         return jsonify(error='failed to update rdio')
     activity = Activity(user.id, 'modified <a href="#playlist?id=' + playlist_id + '">' + playlist.name + '</a>.')
     db_session.add(activity)
