@@ -1,4 +1,4 @@
-import os, subprocess, shutil, re
+import os, subprocess, shutil, re, fileinput
 
 class Git():
     _root = '/home/patrick/code/playgit/'
@@ -22,7 +22,6 @@ class Git():
         return tracks
 
     def _createRepo(self):
-
         #create the directory for the repo for the playlist
         os.makedirs(self._playlistDir)
         os.chdir(self._playlistDir)
@@ -43,17 +42,11 @@ class Git():
         subprocess.call('git commit -am "' + message + '"', shell=True)
         pass
 
-    def add(self, id, index=None):
-        if index:
-            pass
-        else:
-            os.chdir(self._playlistDir)
-            playlistFile = open(self._fileName, 'a')
-            playlistFile.write(id + '\n')
-            playlistFile.close()
-
-    def remove(self, id):
-        pass
+    def update(self, songs):
+        os.chdir(self._playlistDir)
+        with open(self._fileName, 'wb') as f:
+            for song in songs:
+                f.write(song + '\n')
 
     #just copy the directory?
     def fork(self, playlistId):
@@ -94,9 +87,8 @@ class Git():
         return self.playlistId
 
 git = Git("shithappens")
-anotherGit = git.fork("anothershit")
-
-anotherGit.add("omg a song")
+anotherGit = Git("anothershit")
+anotherGit.update(['tesasf', 'insadfsadg', 'ssdfsdhit'])
 anotherGit.commit("Added a song")
 
 print git.diff("anothershit")
