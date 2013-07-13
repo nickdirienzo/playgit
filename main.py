@@ -35,6 +35,19 @@ def import_new_user_playlists(playlist_json, uid):
             continue
     db_session.commit()
 
+def transform_track_keys(track_keys):
+    tracks = list()
+    for track_key in track_keys:
+        t = Song.query.filter(Song.key == track_key).first()
+        track = dict()
+        track['name'] = t.name
+        track['album'] = t.album
+        track['artist'] = t.artist
+        track['artwork_url'] = t.artwork_url
+        track['key'] = track_key
+        tracks.append(track)
+    return jsonify(tracks)
+
 # User handling
 
 def require_login(original_fn):
