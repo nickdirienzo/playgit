@@ -69,7 +69,7 @@ var AppViewModel = function(json) {
 			}
 		});
 	};
-	this.findPlaylist = function(id) {
+	this.findPlaylist = function(id, callback) {
 		toReturn = null;
 		ko.utils.arrayForEach(self.playlists(), function(playlist) {
 			if(playlist.id() == id) {
@@ -77,7 +77,14 @@ var AppViewModel = function(json) {
 				return false;
 			}
 		});
-		return toReturn;
+
+		if(toReturn == null) {
+			$.get('/playlist' + id, function(data) {
+				callback(new PlaylistViewModel(data.playlist));
+			})
+		} else {
+			callback(toReturn);
+		}
 	};
 	this.findPR = function(id, callback) {
 		$.get('/pr/' + id, function(data) {

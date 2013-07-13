@@ -1,10 +1,11 @@
 var appVM = new AppViewModel();
 $(window).hashchange(function() {
 	if(window.location.hash.indexOf('playlist') == 1) {
-		var targetPlaylist = appVM.findPlaylist(parseInt(getQueryVariable('id')));
-		if(targetPlaylist) {
-			appVM.reRender('playlist-tmpl', targetPlaylist); 
-		}
+		appVM.findPlaylist(parseInt(getQueryVariable('id')), function(playlist) {
+			if(playlist) {
+				appVM.reRender('playlist-tmpl', playlist);
+			}
+		});
 	} else if(window.location.hash.indexOf('pr') == 1) {
 		var targetPlaylist = appVM.findPR(parseInt(getQueryVariable('id')), function(data) {
 			if(data.error) {
