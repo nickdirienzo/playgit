@@ -17,7 +17,7 @@ a:hover {
 }
 
 .center {
-	width: 80%;
+	width: 95%;
 	margin: 0 auto;
 	text-align: left;
 }
@@ -26,7 +26,7 @@ header {
 	padding: 10px 0;
 	background: -webkit-linear-gradient(top, #60047A, #54046B);
 	border-bottom: 1px solid #430454;
-	box-shadow: 0px 0px 20px rgba(0,0,0,0.8);
+	box-shadow: 0px 0px 3px rgba(0,0,0,0.8);
 	overflow: hidden;
 }
 
@@ -109,8 +109,6 @@ header h1 a {
 	box-sizing: border-box;
 	padding: 20px;
 	background: rgba(0,0,0,0.3);
-	border: 1px solid rgba(0,0,0,0.7);
-	box-shadow: 0px 0px 20px rgba(0,0,0,0.6) inset;
 	border-radius: 10px;
 	float: left;
 }
@@ -130,7 +128,8 @@ header h1 a {
 }
 
 .playlist h2 {
-	margin-bottom: 5px;
+	margin-bottom: 10px;
+    margin-left: 30px;
 }
 
 .playlist-songsCount {
@@ -172,7 +171,11 @@ header h1 a {
 .playlist-song:hover .playlist-song-remove:hover {
 	opacity: 0.5;
 }
-input#playlist-search-input {
+
+#playlist-search {
+    margin-top: -10px;
+}
+#playlist-search-input {
 	width: 99%;
 	padding: 10px;
 	font-size: 15px;
@@ -180,12 +183,11 @@ input#playlist-search-input {
 	background: rgba(0,0,0,0);
 	border: none;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-	border-radius: 5px;
 	box-sizing: border-box;
 	color: rgba(255, 255, 255, 0.7);
 	outline: none;
 }
-input#playlist-search-input::-webkit-input-placeholder { color: rgba(255, 255, 255, 0.3); }
+#playlist-search-input::-webkit-input-placeholder { color: rgba(255, 255, 255, 0.3); }
 #playlist-search-results {
 	border-left: 20px solid rgba(255, 255, 255, 0.1);
 	background: rgba(255, 255, 255, 0.05);
@@ -233,8 +235,13 @@ input#playlist-search-input::-webkit-input-placeholder { color: rgba(255, 255, 2
     padding: 10px 0;
 }
 
+#activity-feed li:first-child {
+    padding-top: 0;
+}
+
 #activity-feed img {
     width: 20px;
     height: 20px;
     vertical-align: middle;
+    margin-right: 5px;
 }

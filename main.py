@@ -3,7 +3,6 @@ import urllib2
 from flask import Flask, jsonify, render_template, request, session, Response, redirect, url_for
 from functools import wraps
 from rdio import Rdio
-import sqlalchemy
 
 app = Flask(__name__, template_folder=os.path.dirname(os.path.abspath(__file__)))
 app.secret_key = 'yoloswag'
