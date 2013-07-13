@@ -34,12 +34,15 @@ var AppViewModel = function(json) {
 	this.clickLogo = function() {
 		self.transition('homepage-tmpl', self);
 	};
-	this.clickUserLabel = function() {
-		$("#user .user-label").fadeOut(150, function() {
-			$("#user #user-login").fadeIn(150);
+	this.newPlaylist = function() {
+		var playlistName = window.prompt('New playlist name?');
+		console.log(playlistName);
+		$.post('/create_playlist', {name: playlistName}, function() {
+			self.reloadPlaylists();
 		});
-	};
+	}
 
+	// front end data
 	this.addPlaylists = function(_playlists) {
 		if(_playlists) {
 			_.each(_playlists, function(playlist) {
@@ -48,6 +51,15 @@ var AppViewModel = function(json) {
 		}
 	};
 
+	this.reloadPlaylists = function(callback) {
+		$.get("/playlists", function(data) {
+			appVM.playlists.removeAll();
+			appVM.addPlaylists(data.playlists);
+			if(typeof callback === 'function') {
+				callback();
+			}
+		})
+	}
 	this.findPlaylist = function(id) {
 		toReturn = null;
 		ko.utils.arrayForEach(self.playlists(), function(playlist) {
