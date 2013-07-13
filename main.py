@@ -142,12 +142,12 @@ def get_user_playlists(user):
     playlists = Playlist.query.filter(Playlist.uid == user.id).all()
     return jsonify(playlists=[p.toDict() for p in playlists])
 
-@app.route('/create_playlist', methods=['POST', 'GET'])
+@app.route('/create_playlist', methods=['POST'])
 @require_login
 def create_playlist(user):
     try:
         name = request.form['name']
-        if request.form['parent']:
+        if 'parent' in request.form:
             parent = int(request.form['parent'])
         else:
             parent = None

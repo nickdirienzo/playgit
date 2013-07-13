@@ -243,6 +243,12 @@ header h1 a {
 	color: #fff;
 }
 
+a.small-icon-link{
+	font-family: 'iconSweetsRegular';
+	font-size: 14px;
+	text-decoration: none;
+}
+
 #activity-feed {
     margin: 0;
     padding: 0;
