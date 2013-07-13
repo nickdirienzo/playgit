@@ -33,7 +33,7 @@
             <button data-bind="click:clickLogin">Login with Rdio</button>
         </div>
         <div data-bind="if: userIsLoggedIn">
-            <div id="wrapper" data-bind="template: { name: stateTemplate, data: stateData }"></div>
+            <div id="wrapper" data-bind="template: { name: stateTemplate, data: stateData, afterRender: afterRender }"></div>
         </div>
     </div>
 

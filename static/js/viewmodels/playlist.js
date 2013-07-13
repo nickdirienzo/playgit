@@ -28,14 +28,18 @@ var PlaylistViewModel = function(json) {
     this.refreshHistory();
 
     this.isLoading = ko.observable(true);
-    $.get('/playlist/' + this.id(), function(data) {
-        self.isLoading(false);
-        self.songs(data.playlist.songs);
-        _.each(data.playlist.pull_requests, function(pr) {
-        	self.pr.push(new PRModel(pr));
-        });
-        $('.playlist-song.added').removeClass('added');
-    });
+    this.refresh = function() {
+    	self.songs.removeAll();
+    	self.isLoading(true);
+    	$.get('/playlist/' + this.id(), function(data) {
+	        self.isLoading(false);
+	        self.songs(data.playlist.songs);
+	        _.each(data.playlist.pull_requests, function(pr) {
+	        	self.pr.push(new PRModel(pr));
+	        });
+	        $('.playlist-song.added').removeClass('added');
+	    });
+	};
 
     $.get('/user/' + json.uid, function(data) {
         self.username(data.username);
