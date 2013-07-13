@@ -183,6 +183,9 @@ header h1 a {
 	overflow: hidden;
 	line-height: 20px;
 }
+.playlist-song.added {
+    background: rgba(87, 255, 87, 0.23);
+}
 .playlist-song img {
 	margin-right: 5px;
 }

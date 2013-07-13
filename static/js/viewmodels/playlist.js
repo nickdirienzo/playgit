@@ -29,6 +29,7 @@ var PlaylistViewModel = function(json) {
         self.isLoading(false);
         self.songs(data.playlist.songs);
         self.pr(data.playlist.pull_requests);
+        $('.playlist-song.added').removeClass('added');
     });
 
     $.get('/user/' + json.uid, function(data) {
@@ -123,6 +124,7 @@ var PlaylistViewModel = function(json) {
                 if (res.commit) {
                     self.hasChanges(false);
                     self.refreshHistory();
+                    $('.playlist-song.added').removeClass('added');
                 }
             }
         });
@@ -130,7 +132,7 @@ var PlaylistViewModel = function(json) {
 
     this.fadeIn = function(elem) {
         if (elem.nodeType === 1) {
-            $(elem).hide().slideDown();
+            $(elem).hide().addClass('added').slideDown();
         }
     };
     this.fadeOut = function(elem) {
