@@ -13,13 +13,18 @@ var playlist2 = {
 	]
 };
 
-var appVM = new AppViewModel({
-	playlists: [ playlist, playlist2 ]
-});
+// var appVM = new AppViewModel({
+	// playlists: [ playlist, playlist2 ]
+// });
+
+var appVM = new AppViewModel();
 
 $.get('/user', function(data) {
 	appVM.user(data);
 	appVM.isLoaded(true)
 });
+$.get("/playlists", function(data) {
+	appVM.addPlaylists(data.playlists);
+})
 
 ko.applyBindings(appVM);
