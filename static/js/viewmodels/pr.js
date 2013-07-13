@@ -25,5 +25,9 @@ var PRModel = function(json) {
 		return self.parent().username() + '/' + self.parent().name();
 	})
 
+	this.setHash = function() {
+		location.hash = "#pr?id=" + self.id();
+	}
+
 };
 

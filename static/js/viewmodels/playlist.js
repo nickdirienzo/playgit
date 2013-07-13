@@ -31,7 +31,6 @@ var PlaylistViewModel = function(json) {
         _.each(data.playlist.pull_requests, function(pr) {
         	self.pr.push(new PRModel(pr));
         });
-        self.pr(data.playlist.pull_requests);
         $('.playlist-song.added').removeClass('added');
     });
 
@@ -105,6 +104,12 @@ var PlaylistViewModel = function(json) {
 	this.deletePlaylist = function() {
 
 	};
+
+
+	this.displayPullRequest = function(pr) {
+		appVM.transition('pr-tmpl', pr);
+	};
+
 
 	this.removeSong = function(song) {
 		self.songs.remove(song);
