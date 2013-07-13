@@ -5,6 +5,8 @@ var PlaylistViewModel = function(json) {
 	this.name = ko.observable(json.name);
 	this.parent = ko.observable(json.parent);
 	this.songs = ko.observableArray();
+
+	this.owner = ko.observable(json.uid != appVM.user.id);
     this.hasChanges = ko.observable(false);
 
     this.searchQuery = ko.observable("");
@@ -40,6 +42,22 @@ var PlaylistViewModel = function(json) {
 			self.searchResults.removeAll();
 			self.searchQuery('');
 		});
+	};
+
+	this.clickFork = function() {
+		$.get('/fork_playlist/' + json.id, function(data) {
+			appVM.addPlaylists([data.playlist]);
+			console.log(appVM.playlists().length-1);
+			appVM.transition('playlist-tmpl', appVM.playlists()[appVM.playlists().length-1]);
+		});
+	};
+
+	this.pullRequest = function() {
+
+	};
+
+	this.deletePlaylist = function() {
+
 	};
 
 	this.removeSong = function(song) {

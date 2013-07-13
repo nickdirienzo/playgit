@@ -39,7 +39,6 @@ $.get('/user', function(data) {
 	})
 });
 
-
 ko.applyBindings(appVM);
 
 function getQueryVariable(variable) {
