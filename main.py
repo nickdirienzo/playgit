@@ -1,9 +1,14 @@
+import datetime
 import os
-from flask import Flask, jsonify, render_template, request, session, Response
+import sqlalchemy
+from flask import Flask, jsonify, render_template, request, session, Response, make_response, redirect
 from functools import wraps
+from rdio import Rdio
 
 app = Flask(__name__, template_folder=os.path.dirname(os.path.abspath(__file__)))
 app.secret_key = 'yoloswag'
+RDIO_CONSUMER_KEY = 'c8pehjw6u8wdatpgxmq8jqkw'
+RDIO_CONSUMER_SECRET = '9ADNaSuKSG'
 
 from database import db_session, User, Playlist, Song, Activity
 
@@ -19,6 +24,25 @@ def require_login(original_fn):
                 return original_fn(user, *args, **kwargs)
         return Response('Not allowed', 401)
     return new_fn
+
+@app.route('/auth', methods=['POST'])
+def auth():
+    request_token = request.cookies.get('rt')
+    request_token_secret = request.cookies.get('rts')
+    verifier = request.args.get('oauth_verifier', '')
+    if request_token and request_token_secret and verifier:
+        rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (request_token, request_token_secret))
+        session['at'] = rdio.token[0]
+        session['ats'] = rdio.token[1]
+        session['rt'] = ''
+        session['rts'] = ''
+        current_user = rdio.call('currentUser')['result']
+        print current_user
+        session['user_id'] = 1 # Hold until I know what this json is
+        return redirect(url_for('main'))
+    else:
+        # Login failed, clear everything 
+        _ = logout()
 
 @app.route('/user')
 def get_current_user():
@@ -38,20 +62,36 @@ def get_user(user_id):
 
     return Response('No such user', 404)
 
-@app.route('/login', methods=['POST'])
-def login():
-    user = User.query.filter(User.username == request.form['username'],
-                             User.password == request.form['password']).first()
-    if (user):
-        session['user_id'] = user.id
-        return jsonify(success=True)
-    else:
-        return jsonify(success=False)
-
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
+    session['at'] = ''
+    session['ats'] = ''
+    session['rt'] = ''
+    session['rts'] = ''
     return jsonify(success=True)
+
+@app.route('/login')
+def login():
+    access_token = session['at']
+    access_token_secret = session['ats']
+    if access_token and access_token_secret:
+        rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (access_token, access_token_secret))
+        try:
+            current_user = rdio.call('currentUser')['result']
+            print current_user
+            return jsonify({'current_user': current_user})
+        except urllib2.HTTPError:
+            # Something went horribly wrong, like Rdio told us our app sucks.
+            _ = logout()
+    else:
+        session['at'] = ''
+        session['ats'] = ''
+        rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET))
+        login_url = rdio.begin_authentication(callback_url=request.host + '/auth')
+        session['rt'] = rdio.token[0]
+        session['rts'] = rdio.token[1]
+        return jsonify({'login_url': login_url})
 
 # API endpoints
 
