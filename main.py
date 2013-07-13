@@ -218,8 +218,7 @@ def commit_playlist_changes(user, playlist_id):
         added_msg = 'Added '
         for a in added:
             ts = Song.query.filter(Song.key == a).first()
-            if not ts:
-                added_msg += '%s by %s ' % (ts.name, ts.artist)
+            added_msg += '%s by %s ' % (ts.name, ts.artist)
     else:
         added_msg = ''
     if len(removed) > 0:
