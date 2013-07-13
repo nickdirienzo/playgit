@@ -98,7 +98,7 @@
                     No pull requests yet.
                     </span>
                     <ul data-bind="foreach: pr" class="pull-requests">
-                        <li data-bind="click: $parent.displayPullRequest">
+                        <li data-bind="click: $parent.displayPullRequest, css: { accepted: isAccepted() }">
                             <span data-bind="text: requested_on" class="date"></span>
                             <img data-bind="attr: { src: child_icon }">
                             <span data-bind="text: child_username" class="username"></span>
