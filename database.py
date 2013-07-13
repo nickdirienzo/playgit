@@ -106,16 +106,27 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(100), unique=True)
     token = Column(String(100))
+    icon = Column(String(100))
+    first_name = Column(String(100))
+    last_name = Column(String(100))
 
-    def __init__(self, username, token):
+    def __init__(self, username, token, icon, first_name, last_name):
         self.username = username
         self.token = token
+        self.icon = icon
+        self.first_name = first_name
+        self.last_name = last_name
 
     def toDict(self):
-        return {'username': self.username}
+        return {
+            'username': self.username,
+            'icon': self.icon,
+            'first_name': self.first_name,
+            'last_name': self.last_name
+        }
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return self.toDict()
 
 def init_db():
     Base.metadata.create_all(bind=engine)

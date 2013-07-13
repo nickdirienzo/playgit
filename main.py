@@ -31,17 +31,19 @@ def auth():
     verifier = request.args.get('oauth_verifier', '')
     if request_token and request_token_secret and verifier:
         rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (request_token, request_token_secret))
+        rdio.complete_authentication(verifier)
         session['at'] = rdio.token[0]
         session['ats'] = rdio.token[1]
         session['rt'] = ''
         session['rts'] = ''
         current_user = rdio.call('currentUser')['result']
         print current_user
-        session['user_id'] = 1 # Hold until I know what this json is
+        #session['user_id'] = 1 # Hold until I know what this json is
         return redirect(url_for('main'))
     else:
         # Login failed, clear everything
         logout()
+        return redirect(url_for('main'))
 
 @app.route('/user')
 def get_current_user():
@@ -83,9 +85,12 @@ def login():
         except urllib2.HTTPError:
             # Something went horribly wrong, like Rdio told us our app sucks.
             logout()
+            return redirect(url_for('main'))
     else:
         session['at'] = ''
         session['ats'] = ''
+        session['rt'] = ''
+        session['rts'] = ''
         rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET))
         login_url = rdio.begin_authentication(callback_url='http://' + request.host + '/auth')
         session['rt'] = rdio.token[0]
