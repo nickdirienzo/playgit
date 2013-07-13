@@ -7,6 +7,7 @@
     <script type="text/javascript" src="static/js/lib/underscore-1.5.1.js"></script>
     <script type="text/javascript" src="static/js/lib/knockout-2.3.0.js"></script>
 
+    <script type="text/javascript" src="static/js/viewmodels/activity.js"></script>
     <script type="text/javascript" src="static/js/viewmodels/app.js"></script>
     <script type="text/javascript" src="static/js/viewmodels/playlist.js"></script>
     <script type="text/javascript" src="static/js/viewmodels/song.js"></script>
@@ -24,14 +25,9 @@
     </header>
 
     <div class="center" data-bind="if: isLoaded">
-        <div data-bind="ifnot: userIsLoggedIn" id="welcome"> 
-            <h2>Some really inspirational text.</h2>
-            <p class="desc">Some really bullshit blurb, talking about how inspiration our app is, how this will change how we live our lives, and how we will get 15mm funding.</p>
-            <div class="form">
-                <input type="text" name="username" placeholder="Username" data-bind="value: userFormUsername">
-                <input type="password" name="password" placeholder="Password" data-bind="value: userFormPassword">
-                <button data-bind="click:clickLogin">Login</button>
-            </div>
+        <div data-bind="ifnot: userIsLoggedIn" id="welcome">
+            <h2>Version control your playlists.</h2>
+            <button data-bind="click:clickLogin">Login with Rdio</button>
         </div>
         <div data-bind="if: userIsLoggedIn">
             <div id="wrapper" data-bind="template: { name: stateTemplate, data: stateData }"></div>
@@ -47,6 +43,15 @@
                 <div class="widget-title">Your Playlists</div>
                 <ul class='homepage-list-playlist' data-bind="template:{ name: 'homepage-list-playlist-tmpl', foreach: playlists }"></ul>
             </div>
+        </div>
+        <div class="main-content">
+            <ul data-bind="foreach: latestActivity" id="activity-feed">
+                <li>
+                    <img data-bind="attr: { src: user.icon }">
+                    <span data-bind="text: user.username"></span>
+                    <span data-bind="html: description"></span>
+                </li>
+            </ul>
         </div>
     </script>
     <script type="text/html" id="homepage-list-playlist-tmpl">
