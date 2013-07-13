@@ -59,8 +59,14 @@ var AppViewModel = function(json) {
 		return toReturn;
 	}
 
-	this.transition = function(template, data) {
+	this.transition = function(template, data, noAnim) {
 		if(template == self.stateTemplate()) return;
+
+		if(noAnim) {
+			animationTimeout = 0;
+		} else {
+			animationTimeout = 300;
+		}
 
 		beforeTransition = self.stateData().beforeTransition;
 		if(typeof beforeTransition === 'function') {
@@ -78,7 +84,7 @@ var AppViewModel = function(json) {
 			}
 		}
 
-		$('#wrapper').slideUp(300, function() {
+		$('#wrapper').slideUp(animationTimeout, function() {
 			self.stateTemplate('null-tmpl');
 			self.stateData(data);
 			self.stateTemplate(template);

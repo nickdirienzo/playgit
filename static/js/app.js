@@ -6,6 +6,7 @@ var playlist = {
 	]
 };
 var playlist2 = {
+	id: 3
 	name: "Test Playlist 2",
 	songs: [
 		{ name: "Can't Hold Us", artist: "Macklemore", album: "The Heist" },
@@ -21,7 +22,7 @@ var appVM = new AppViewModel();
 
 $.get('/user', function(data) {
 	appVM.user(data);
-	appVM.isLoaded(true)
+	appVM.isLoaded(true);
 
 	$.get("/playlists", function(data) {
 		appVM.addPlaylists(data.playlists);
@@ -30,7 +31,7 @@ $.get('/user', function(data) {
 		if(window.location.hash.indexOf('playlist') == 1) {
 			var targetPlaylist = appVM.findPlaylist(parseInt(getQueryVariable('id')));
 			if(targetPlaylist) {
-				appVM.transition('playlist-tmpl', targetPlaylist); 
+				appVM.transition('playlist-tmpl', targetPlaylist, true); 
 			}
 		}
 	})
