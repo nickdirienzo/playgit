@@ -68,7 +68,7 @@
                     <input type="text" id="playlist-search-input" placeholder="Search Rdio for songs..." data-bind="value: searchQuery, valueUpdate: 'afterkeydown', event: { keyup: doSearch }">
                     <div id="playlist-search-results" data-bind="template: { name: 'playlist-song-search-result-tmpl', foreach: searchResults }"></div>
                 </div>
-                <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs }"></div>
+                <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs, afterAdd: fadeIn }"></div>
             </div>
             <div class="sidebar">
                 <div class="widget">
