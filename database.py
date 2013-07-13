@@ -66,7 +66,6 @@ class Playlist(Base):
             'name': self.name,
             'parent': self.parent,
             'create_date': self.create_date,
-            'path': self.path
         }
 
         if with_songs:

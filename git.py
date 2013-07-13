@@ -8,7 +8,7 @@ class Git():
     _playlistDir = ''
     def __init__(self, playlistId):
         self._playlistId = playlistId
-        self._playlistDir = self._root + self._dirName + self._playlistId + '/'
+        self._playlistDir = os.path.join(self._root, self._dirName, str(self._playlistId))
 
         if not os.path.exists(self._playlistDir):
             self._createRepo()
@@ -35,7 +35,7 @@ class Git():
         subprocess.call('git add ' + self._fileName, shell=True)
 
         self.commit('Initial commit.')
-        
+
     #just commit it with timestamp as commit message.
     def commit(self, message):
         os.chdir(self._playlistDir)
@@ -50,7 +50,7 @@ class Git():
 
     #just copy the directory?
     def fork(self, playlistId):
-        newDir = self._root + self._dirName + playlistId
+        newDir = os.path.join(self._root, self._dirName, str(playlistId))
         if not os.path.exists(newDir):
             subprocess.call('cp -r ' + self._playlistDir + '/. ' + newDir, shell=True)
         return Git(playlistId)
@@ -64,10 +64,10 @@ class Git():
 
     def diff(self, remote):
         os.chdir(self._playlistDir)
-        subprocess.call('git fetch ' + self._root + self._dirName + remote + 
+        subprocess.call('git fetch ' + self._root + self._dirName + remote +
             ' master:' + remote + '/master', shell=True)
         diffOutput = subprocess.check_output('git diff master..' + remote + '/master', shell=True)
-        
+
         gotToDiffLines = False
         changes = []
         for line in diffOutput.split('\n'):
