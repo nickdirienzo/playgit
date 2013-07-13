@@ -2,8 +2,9 @@ var AppViewModel = function(json) {
 	var self = this;
 
 	this.user = ko.observable({
-		id: 1,
-		username: "Guest"
+		id: 0,
+		username: null,
+		is_logged_in: false
 	});
 
 	this.userFormUsername = ko.observable("");
@@ -19,6 +20,9 @@ var AppViewModel = function(json) {
 	this.userLabel = ko.computed(function() {
 		return self.user().username;
 	});
+	this.userIsLoggedIn = ko.computed(function() {
+		return self.user().is_logged_in;
+	})
 
 	// functions
 	this.clickUserLabel = function() {

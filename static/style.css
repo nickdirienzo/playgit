@@ -49,3 +49,42 @@ header h1 {
 	font-family: "Helvetica Neue";
 	border: 1px solid rgba(0,0,0,0.7);
 }
+
+#welcome h2 {
+	margin: 200px 0 0 0;
+	font-size: 70px;
+	text-shadow: 5px 5px 10px rgba(0,0,0,0.9);
+	width: 50%;
+}
+
+#welcome p.desc {
+	width: 60%;
+	font-size: 20px;
+	color: rgba(255, 255, 255, 0.7);
+	text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+}
+
+#welcome .form {
+	width: 60%;
+}
+#welcome .form input, button {
+	width: 30%;
+	margin-right: 2%;
+	padding: 10px;
+	font-size: 20px;
+	box-sizing: border-box;
+	font-family: "Helvetica Neue";
+	border: 1px solid rgba(0,0,0,0.7);
+	border-radius: 5px;
+	margin-bottom: 15px;
+}
+#welcome .form button {
+	background: -webkit-linear-gradient(top, #60047A, #54046B);
+	border: 1px solid rgba(255,255,255,0.3);
+	color: #fff;
+	transition: 0.2s opacity;
+	cursor: pointer;
+}
+#welcome .form button:hover {
+	opacity: 0.8;
+}
