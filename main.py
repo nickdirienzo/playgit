@@ -3,6 +3,7 @@ import urllib2
 from flask import Flask, jsonify, render_template, request, session, Response, redirect, url_for
 from functools import wraps
 from rdio import Rdio
+import sqlalchemy
 
 app = Flask(__name__, template_folder=os.path.dirname(os.path.abspath(__file__)))
 app.secret_key = 'yoloswag'
@@ -10,6 +11,9 @@ RDIO_CONSUMER_KEY = 'c8pehjw6u8wdatpgxmq8jqkw'
 RDIO_CONSUMER_SECRET = '9ADNaSuKSG'
 
 from database import db_session, User, Playlist, Activity
+
+def AuthedRdio(at, ats):
+    return Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (at, ats))
 
 # User handling
 
@@ -39,9 +43,12 @@ def auth():
         rdio_data = rdio.call('currentUser')['result']
         username = rdio_data['url'].replace('/', ' ').split()[-1]
         print 'Creating user model.'
-        user = User(username=username, token=rdio_data['key'], icon=rdio_data['icon'], first_name=rdio_data['firstName'], last_name=rdio_data['lastName'])
-        db_session.add(user)
-        db_session.commit()
+        try:
+            user = User(username=username, token=rdio_data['key'], icon=rdio_data['icon'], first_name=rdio_data['firstName'], last_name=rdio_data['lastName'])
+            db_session.add(user)
+            db_session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            user = User.query.filter(User.username == username).first()
         print 'Committed.'
         session['user_id'] = user.id
         print session
@@ -171,8 +178,14 @@ def commit_playlist_changes(user, playlist_id):
 @app.route('/search')
 @require_login
 def search_for_song(user):
-    # TODO (nick)
-    pass
+    query = request.args.get('q')
+    types = ['Artist', 'Album', 'Track']
+    rdio = AuthedRdio(session.get('at'), session.get('ats'))
+    try:
+        results = rdio.call('search', params={'query': query, 'types': ','.join(types)})['result']
+        return jsonify(results)
+    except urllib2.HTTPError:
+        return jsonify(error='failure')
 
 @app.route('/activity')
 def get_latest_activity():
