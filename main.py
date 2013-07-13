@@ -115,9 +115,12 @@ def login():
     if access_token and access_token_secret:
         rdio = Rdio((RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET), (access_token, access_token_secret))
         try:
-            current_user = rdio.call('currentUser')['result']
+            rdio_data = rdio.call('currentUser', params={'extras': 'username,displayName'})['result']
+            username = rdio_data['username']
+            user = User.query.filter(User.username == username).first()
+            session['user_id'] = user.id
             print current_user
-            return jsonify(current_user=current_user)
+            return redirect(url_for('main'))
         except urllib2.HTTPError:
             # Something went horribly wrong, like Rdio told us our app sucks.
             logout()
@@ -313,6 +316,16 @@ def pull_request(user, forked_playlist_id, parent_playlist_id):
     pr = PullRequest(parent.uid, parent.id, session.get('user_id'), fork.id, False, None, datetime.datetime.now())
     db_session.add(pr)
     db_session.commit()
+    return jsonify(success=True)
+
+@app.route('/pr/<parent_playlist_id>/<forked_playlist_id>/accept')
+@require_login
+def accept_pull_request(user, parent_playlist_id, forked_playlist_id):
+    parent = Playlist.query.filter(Playlist.id == parent_playlist_id and Playlist.uid == user.id).first()
+    if not parent:
+        return jsonify(error='invalid playlist id')
+    db_session.query(PullRequest).filter(PullRequest.parent_uid == user.id and PullRequest.parent_pid == parent_playlist_id and PullRequest.child_pid == forked_playlist_id).update({'accepted': True, 'accepted_on': datetime.datetime.now()})
+    parent.git().merge(str(forked_playlist_id))
     return jsonify(success=True)
 
 # Misc

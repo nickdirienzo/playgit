@@ -67,7 +67,6 @@ class Git():
         os.chdir(self._playlistDir)
         subprocess.call('git pull ' + self._root + self._dirName + remote + ' master', shell=True)
         self.commit("Merged")
-        pass
 
     def diff(self, remote):
         os.chdir(self._playlistDir)
