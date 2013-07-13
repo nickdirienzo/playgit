@@ -16,7 +16,7 @@
 <body>
     <header>
         <div class="center">
-            <a href="#"><h1 data-bind="click: clickLogo">Playgit</h1></a>
+            <h1 data-bind="click: clickLogo"><a href="#">Playgit</a></h1>
 
             <div id="user" data-bind="if: userIsLoggedIn">
                 <span data-bind="text: userLabel"></span>
@@ -38,7 +38,7 @@
         <div></div>
     </script>
     <script type="text/html" id="homepage-tmpl">
-        <div class="sidebar">
+        <div class="left sidebar">
             <div class="widget">
                 <div class="widget-title">Your Playlists</div>
                 <ul class='homepage-list-playlist' data-bind="template:{ name: 'homepage-list-playlist-tmpl', foreach: playlists }"></ul>
@@ -59,32 +59,51 @@
     </script>
     <script type="text/html" id="playlist-tmpl">
         <div class="playlist">
+            <div class="buttons">
+                <a class="commit-button" data-bind="visible: hasChanges, click: commitChanges">Commit changes</a>
+            </div>
             <h2>
                 <span data-bind="text: name"></span>
                 <span class="playlist-songsCount"><span data-bind="text: songsCount"></span> songs</span>
                 <input type="button" value="Fork" data-bind="visible: owner, click: clickFork">
                 <input type="button" value="Pull Request" data-bind="visible: parent, click: pullRequest">
                 <input type="button" value="Delete Playlist" data-bind="visible: owner, click: deletePlaylist">
+                <span class="playlist-loading" data-bind="visible: isLoading">Loading...</span>
+                <span class="playlist-songsCount" data-bind="visible: !isLoading"><span data-bind="text: songsCount"></span> songs</span>
             </h2>
             <div class="main-content">
-                <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs }"></div>
+                <div id="playlist-search">
+                    <input type="text" id="playlist-search-input" placeholder="Search Rdio for songs..." data-bind="value: searchQuery, valueUpdate: 'afterkeydown', event: { keyup: doSearch }">
+                    <div id="playlist-search-results" data-bind="template: { name: 'playlist-song-search-result-tmpl', foreach: searchResults }"></div>
+                </div>
+                <div data-bind="template: { name: 'playlist-song-tmpl', foreach: songs, afterAdd: fadeIn, beforeRemove: fadeOut }"></div>
             </div>
             <div class="sidebar">
                 <div class="widget">
-                    <input type="text" id="playlist-search" placeholder="Search rdio for songs...">
                 </div>
                 <div class="widget">
                     <div class="widget-title">Pull Requests</div>
-
+                    <ul data-bind="template: {name: 'playlist-list-pr-tmpl', foreach: pr }"></ul>
                 </div>
             </div>
         </div>
     </script>
-    <script type="text/html" id="playlist-song-tmpl">
-        <div class="playlist-song">
+    <script type="text/html" id="playlist-list-pr-tmpl">
+       <a href="#"><li data-bind="text: name"></li></a>
+    </script>
+    <script type="text/html" id="playlist-song-search-result-tmpl">
+        <div class="playlist-song" data-bind="click: $parent.clickSearchResult">
+            <img data-bind="attr: { src: icon }" width="20px" height="20px" />
             <span class="playlist-song-name" data-bind="text: name">Song name</span>
             <span class="playlist-song-artist" data-bind="text: artist">Artist name</span>
-            <a href="#" class="playlist-song-remove" data-bind="click: removeSong">(remove)</a>
+        </div>
+    </script>
+    <script type="text/html" id="playlist-song-tmpl">
+        <div class="playlist-song">
+            <img class="playlist-artwork" data-bind="attr: { src: artwork_url }">
+            <span class="playlist-song-name" data-bind="text: name">Song name</span>
+            <span class="playlist-song-artist" data-bind="text: artist">Artist name</span>
+            <a class="playlist-song-remove" data-bind="click: $parent.removeSong">(remove)</a>
         </div>
     </script>
     <script type="text/javascript" src="static/js/app.js"></script>

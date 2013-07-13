@@ -49,19 +49,49 @@ var AppViewModel = function(json) {
 		}
 	};
 
-	this.transition = function(template, data) {
+	this.findPlaylist = function(id) {
+		toReturn = null;
+		ko.utils.arrayForEach(self.playlists(), function(playlist) {
+			if(playlist.id() == id) {
+				toReturn = playlist;
+				return false;
+			}
+		});
+		return toReturn;
+	}
+
+	this.transition = function(template, data, noAnim) {
 		if(template == self.stateTemplate()) return;
+
+		if(noAnim) {
+			animationTimeout = 0;
+		} else {
+			animationTimeout = 300;
+		}
 
 		beforeTransition = self.stateData().beforeTransition;
 		if(typeof beforeTransition === 'function') {
 			beforeTransition();
 		}
-		$('#wrapper').slideUp(300, function() {
+
+		setHash = data.setHash;
+		if(typeof setHash === 'function') {
+			setHash();
+		} else {
+			if(template == 'homepage-tmpl') {
+				location.hash = ""
+			} else {
+				location.hash = template.substring(0, template.length-5);
+			}
+		}
+
+		$('#wrapper').slideUp(animationTimeout, function() {
 			self.stateTemplate('null-tmpl');
 			self.stateData(data);
 			self.stateTemplate(template);
 		});
 		$("#wrapper").slideDown(300);
+
 	};
 
 	this.clickLogin = function() {
