@@ -286,3 +286,13 @@ header h1 a {
     font-weight: normal;
     margin-bottom: 2px;
 }
+
+.widget .history {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.widget .history li {
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+}

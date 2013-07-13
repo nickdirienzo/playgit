@@ -188,12 +188,13 @@ def get_playlist(user, playlist_id):
     return jsonify(playlist=playlist.toDict(with_songs=True, with_prs=True))
 
 @app.route('/playlist/<playlist_id>/log')
+@require_login
 def get_playlist_log(user, playlist_id):
     playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
     if not playlist:
         return Response('No such playlist', 404)
 
-    return jsonify(playlist.getLog())
+    return jsonify(history=playlist.getLog())
 
 @app.route('/diff/<playlist_id1>/<rev1>/<playlist_id2>/<rev2>')
 @require_login

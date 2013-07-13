@@ -82,10 +82,14 @@
             </div>
             <div class="sidebar">
                 <div class="widget">
-                </div>
-                <div class="widget">
                     <div class="widget-title">Pull Requests</div>
                     <ul data-bind="template: {name: 'playlist-list-pr-tmpl', foreach: pr }"></ul>
+                </div>
+                <div class="widget">
+                    <div class="widget-title">History</div>
+                    <ul data-bind="foreach: history" class="history">
+                        <li data-bind="text: $data"></li>
+                    </ul>
                 </div>
             </div>
         </div>
