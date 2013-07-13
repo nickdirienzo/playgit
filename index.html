@@ -86,9 +86,11 @@
             <div class="sidebar">
                 <div class="widget">
                     <div class="widget-title">Pull Requests</div>
-                    <ul data-bind="foreach: pr">
-                        <li data-bind="text: requested_on">
-                            <span data-bind="text: child_username"></span>
+                    <ul data-bind="foreach: pr" class="pull-requests">
+                        <li data-bind="click: $parent.displayPullRequest">
+                            <span data-bind="text: requested_on" class="date"></span>
+                            <img data-bind="attr: { src: child_icon }">
+                            <span data-bind="text: child_username" class="username"></span>
                         </li>
                     </ul>
                 </div>
