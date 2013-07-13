@@ -1,4 +1,4 @@
-import os, subprocess, shutil
+import os, subprocess, shutil, re
 
 class Git():
     _root = '/home/patrick/code/playgit/'
@@ -66,10 +66,26 @@ class Git():
     def merge(self, remote):
         os.chdir(self._playlistDir)
         subprocess.call('git pull ' + self._root + self._dirName + remote + ' master', shell=True)
+        self.commit("Merged")
         pass
 
-    def diff(self):
-        pass
+    def diff(self, remote):
+        os.chdir(self._playlistDir)
+        subprocess.call('git fetch ' + self._root + self._dirName + remote + 
+            ' master:' + remote + '/master', shell=True)
+        diffOutput = subprocess.check_output('git diff master..' + remote + '/master', shell=True)
+        
+        gotToDiffLines = False
+        changes = []
+        for line in diffOutput.split('\n'):
+            if re.search(r'^@@', line):
+                gotToDiffLines = True
+            if gotToDiffLines:
+                if len(line) > 0 and (line[0] == '-' or line[0] == '+'):
+                    changes.append([line[0], line[1:]])
+
+        subprocess.call('git branch -D ' + remote + '/master', shell=True)
+        return changes
 
     def delete(self):
         shutil.rmtree(self._playlistDir)
@@ -83,4 +99,4 @@ anotherGit = git.fork("anothershit")
 anotherGit.add("omg a song")
 anotherGit.commit("Added a song")
 
-git.merge("anothershit")
+print git.diff("anothershit")
