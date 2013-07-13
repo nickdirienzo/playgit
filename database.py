@@ -56,8 +56,8 @@ class Playlist(Base):
     def __repr__(self):
         return '<Playlist %r %s>' % (self.name, self.path)
 
-    def toDict(self):
-        return {
+    def toDict(self, with_songs=False):
+        info = {
             'id': self.id,
             'uid': self.uid,
             'name': self.name,
@@ -65,6 +65,14 @@ class Playlist(Base):
             'create_date': self.create_date,
             'path': self.path
         }
+
+        if with_songs:
+            # Load in song info
+            songs = []
+            # TODO (pat) get the song ids out of the repo
+            info['songs'] = songs
+
+        return info
 
 class User(Base):
     __tablename__ = 'users'

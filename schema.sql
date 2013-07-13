@@ -6,7 +6,7 @@ CREATE TABLE songs (
   artist VARCHAR(100),
   artwork_url VARCHAR(100),
   year INTEGER,
-  genre VARCHAR(100)  
+  genre VARCHAR(100)
 );
 
 DROP TABLE IF EXISTS playlists CASCADE;

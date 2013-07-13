@@ -46,17 +46,6 @@ def logout():
     session.pop('user_id', None)
     return jsonify(success=True)
 
-@app.route('/signup', methods=['POST'])
-def signup():
-    try:
-        new_user = User(request.form['username'], request.form['password'])
-        db_session.add(new_user)
-        db_session.commit()
-        session['user_id'] = new_user.id
-        return jsonify(success=True)
-    except sqlalchemy.exc.IntegrityError:
-        return jsonify(success=False)
-
 # API endpoints
 
 @app.route('/playlists')
@@ -86,10 +75,14 @@ def create_playlist(user):
 def fork_playlist(user, playlist_id):
     pass
 
-@app.route('/playlist/<playlist_id>/current')
+@app.route('/playlist/<playlist_id>')
 @require_login
 def get_playlist(user, playlist_id):
-    pass
+    playlist = Playlist.query.filter(Playlist.id == playlist_id).first()
+    if not playlist:
+        return Response('No such playlist', 404)
+
+    return jsonify(playlist.toDict(with_songs=True))
 
 @app.route('/playlist/<playlist_id>/log')
 def get_playlist_log(user, playlist_id):
@@ -113,9 +106,13 @@ def search_for_song(user):
 
 # Misc
 
-@app.route('/')
-def main(user=None):
+@app.route('/test')
+def testingPage(user):
     return render_template('user.html', user=user)
+
+@app.route('/')
+def main():
+    return render_template('index.html')
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):

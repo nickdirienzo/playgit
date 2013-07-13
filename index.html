@@ -2,16 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script type="text/javascript" src="static/js/lib/underscore-1.5.1.js"></script>
     <script type="text/javascript" src="static/js/lib/knockout-2.3.0.js"></script>
 
-
     <script type="text/javascript" src="static/js/viewmodels/app.js"></script>
-    <script type="text/javascript" src="static/js/viewmodels/playlist.js"></script>
-    <title>Playgit</title>
-</head>
-<body>
-    <div data-bind="template: {name: 'playlist-tmpl', foreach: playlists}"></div>
+        <script type="text/javascript" src="static/js/viewmodels/playlist.js"></script>
+        <title>Playgit</title>
+    </head>
+    <body>
+        <header>
+            <div class="center">
+                <h1>Playgit</h1>
+
+                <div id="user" data-bind="if: userIsLoggedIn">
+                    <span data-bind="text: userLabel"></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="center">
+        <div data-bind="ifnot: userIsLoggedIn" id="welcome"> 
+            <h2>Some really inspirational text.</h2>
+            <p class="desc">Some really bullshit blurb, talking about how inspiration our app is, how this will change how we live our lives, and how we will get 15mm funding.</p>
+            <div class="form">
+                <input type="text" name="username" placeholder="Username" data-bind="value: userFormUsername">
+                <input type="password" name="password" placeholder="Password" data-bind="value: userFormPassword">
+                <button data-bind="click:clickLogin">Login</button>
+            </div>
+        </div>
+        <div data-bind="if: userIsLoggedIn">
+            <div data-bind="template: {name: 'playlist-tmpl', foreach: playlists}"></div>
+        </div>
+    </div>
+
+
     <script type="text/html" id="playlist-tmpl">
         <b data-bind="text: name">Hi?</b>
         <span data-bind="text: songsCount">Hi</span>

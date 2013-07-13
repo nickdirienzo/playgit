@@ -7,7 +7,11 @@ playlist = {
 };
 
 appVM = new AppViewModel({
-	playlists: [ playlist ]
+	playlists: [ playlist, playlist ]
+});
+
+$.get('/user', function(data) {
+	appVM.user(data);
 })
 
 ko.applyBindings(appVM);
