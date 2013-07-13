@@ -153,8 +153,8 @@ def create_playlist(user):
         playlist = Playlist(uid=user.id, name=name, parent=parent)
         db_session.add(playlist)
         db_session.commit()
-        playlist.initGit(playlist.id) # xxx might not work
-        fork_activity = Activity(user.id, " created playlist <a href='#playlist?id=" + playlist.id + "'>" + name + "</a>")
+        playlist.initGit() # xxx might not work
+        fork_activity = Activity(user.id, " created playlist <a href='#playlist?id=%d'>%s</a>" % (playlist.id, name))
         db_session.add(fork_activity)
         db_session.commit()
         return jsonify(success=True, playlist=playlist.toDict())
